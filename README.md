@@ -1,9 +1,9 @@
 # FIFA World Cup 2026
 
-Android app for following the FIFA World Cup 2026. The app shows group standings, fixtures, knockout bracket updates, team details, player rankings, and match results refreshed from a Vercel-hosted CSV file.
+Android app for following the FIFA World Cup 2026. The app shows group standings, fixtures, knockout bracket updates, team details, player rankings, and match results.
 
 ## Download
-<img width="400" height="400" alt="QRCode" src="https://github.com/user-attachments/assets/83c5d1bc-f5a4-4489-95a2-d3824986c830" />
+<img width="400" height="400" alt="QRCode" src="https://github.com/user-attachments/assets/882f1101-6803-4aac-bacb-6a0001c4dd2f" />
 
 ## Snapshots
 <img width="258" height="568" alt="1" src="https://github.com/user-attachments/assets/c8a0ad13-a873-4ad1-b477-209c0896dd85" />
