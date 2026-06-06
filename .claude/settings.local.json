@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Command *)",
+      "PowerShell($jar = \"D:\\\\Dev\\\\WC26\\\\App\\\\gradle\\\\wrapper\\\\gradle-wrapper.jar\"; [System.IO.FileInfo]$jar | Select-Object FullName, Length; $bytes = [System.IO.File]::ReadAllBytes\\($jar\\); \"SHA256: \" + \\([System.Security.Cryptography.SHA256]::Create\\(\\).ComputeHash\\($bytes\\) | ForEach-Object { $_.ToString\\('x2'\\) }\\) -join '')",
+      "PowerShell($jar = \"D:\\\\Dev\\\\WC26\\\\App\\\\gradle\\\\wrapper\\\\gradle-wrapper.jar\"; [System.IO.FileInfo]$jar | Select-Object FullName, Length, LastWriteTime)",
+      "PowerShell(Get-Content \"D:\\\\Dev\\\\WC26\\\\App\\\\app\\\\src\\\\main\\\\assets\\\\data\\\\teams.json\" -TotalCount 5 | ForEach-Object { [System.Text.Encoding]::UTF8.GetBytes\\($_[0..3]\\) -join ',' })",
+      "PowerShell(Get-ChildItem \"D:\\\\Dev\\\\WC26\\\\Pic\\\\Country\" | Where-Object { $_.Name -match \"korea|south\" -or $_.Name -match \"Korea\" } | Select-Object Name)",
+      "PowerShell(Get-ChildItem \"D:\\\\Dev\\\\WC26\\\\Pic\\\\Country\" | Where-Object { $_.Name -match \"Qatar\" } | Select-Object Name, Length)"
+    ]
+  }
+}

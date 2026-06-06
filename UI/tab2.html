@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;height:-webkit-fill-available">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>FIFA World Cup 2026 · Schedule</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F2F7;--surface:#fff;--s2:#F2F2F7;--s3:rgba(120,120,128,.12);
+  --label:#000;--l2:rgba(60,60,67,.6);--l3:rgba(60,60,67,.3);--sep:rgba(60,60,67,.12);
+  --blue:#007AFF;--green:#34C759;--red:#FF3B30;--gray:#8E8E93;
+  --font:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;
+}
+body{
+  background:var(--bg);font-family:var(--font);
+  display:flex;flex-direction:column;
+  height:100vh;height:-webkit-fill-available;
+  overflow:hidden;
+  padding:0;margin:0;
+  padding-top:env(safe-area-inset-top);
+}
+
+/* ── STATUS / NAV ── */
+.nav-bar{height:44px;padding:0 16px;display:flex;align-items:center;
+  justify-content:space-between;background:var(--surface);
+  border-bottom:.5px solid var(--sep);flex-shrink:0}
+.nav-title{font-size:17px;font-weight:600;color:var(--label);letter-spacing:-.4px}
+.datepick-btn{display:flex;align-items:center;gap:5px;background:var(--s3);
+  border-radius:14px;padding:5px 10px 5px 8px;cursor:pointer;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
+.datepick-btn:active{transform:scale(.93)}
+.datepick-btn span{font-size:13px;font-weight:500;color:var(--blue)}
+
+/* ── DATE BAR ── */
+.date-bar{position:sticky;top:0;background:rgba(255,255,255,.92);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-bottom:.5px solid var(--sep);flex-shrink:0;z-index:50}
+.month-label-wrap{height:22px;display:flex;align-items:center;padding:0 16px;overflow:hidden}
+.month-label{font-size:11px;font-weight:600;color:var(--l2);letter-spacing:.04em;
+  text-transform:uppercase;white-space:nowrap;
+  transition:transform .28s cubic-bezier(.25,.46,.45,.94),opacity .28s ease}
+.month-label.exit-left{transform:translateX(-18px);opacity:0}
+.month-label.enter-right{transform:translateX(18px);opacity:0}
+.date-scroll{display:flex;overflow-x:auto;padding:4px 8px 10px 16px;gap:4px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.date-scroll::-webkit-scrollbar{display:none}
+.date-chip{flex-shrink:0;width:48px;display:flex;flex-direction:column;
+  align-items:center;padding:5px 0 6px;border-radius:12px;cursor:pointer;
+  transition:all .22s cubic-bezier(.34,1.56,.64,1)}
+.date-chip:active{transform:scale(.9)}
+.date-chip.active{background:var(--blue)}
+.date-chip.no-match{opacity:.4}
+.dc-day{font-size:10px;font-weight:500;color:var(--l3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:1px}
+.dc-num{font-size:18px;font-weight:600;color:var(--label);line-height:1.1;letter-spacing:-.5px}
+.dc-dot{width:4px;height:4px;border-radius:50%;background:var(--blue);margin-top:2px}
+.dc-empty{width:4px;height:4px;margin-top:2px}
+.date-chip.active .dc-day,.date-chip.active .dc-num{color:#fff}
+.date-chip.active .dc-dot{background:rgba(255,255,255,.65)}
+.date-chip.today:not(.active) .dc-num{color:var(--blue)}
+
+/* ── SCROLL ── */
+.scroll-area{min-height:0;flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.scroll-area::-webkit-scrollbar{display:none}
+
+/* ── DATE GROUP ── */
+.date-group{padding:18px 0 4px}
+.dg-hd{padding:0 16px 10px;display:flex;align-items:baseline;justify-content:space-between}
+.dg-title{font-size:15px;font-weight:600;color:var(--label);letter-spacing:-.3px}
+.dg-count{font-size:12px;color:var(--l3)}
+.dg-div{height:6px;background:var(--bg);margin:10px 0 0}
+
+/* ══════════════════════════════════════
+   MATCH CARD — New structure
+   Row 1: stage label + live badge
+   Row 2: [flag · name] [score/time] [name · flag]
+   Row 2.5: [#RK centered] [blank] [#RK centered]
+   Row 3: 📍 Stadium (tappable → maps)
+   ══════════════════════════════════════ */
+.match-card{
+  background:var(--surface);
+  margin:0 14px 10px;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.06);
+  cursor:pointer;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+}
+.match-card:active{transform:scale(.985)}
+.match-card.live{box-shadow:0 0 0 1px rgba(255,59,48,.22),0 2px 8px rgba(255,59,48,.1)}
+
+/* Row 1 — Stage + cal button top-right */
+.mc-row1{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px 0;
+  gap:8px;
+}
+.mc-stage{
+  font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--l3);
+}
+.mc-stage.knockout{color:#AF52DE;}
+.mc-stage.final{color:#FF9500;}
+.live-badge{
+  display:flex;align-items:center;gap:3px;
+  background:rgba(255,59,48,.1);border-radius:6px;padding:2px 7px;
+  font-size:10px;font-weight:700;color:var(--red);
+}
+.live-dot{width:4px;height:4px;border-radius:50%;background:var(--red);
+  animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+/* Row 2 — Teams + Score/Time
+   Three columns: left-team | center | right-team
+   Left team: flex-start; right team: flex-end
+*/
+.mc-row2{
+  display:flex;align-items:center;
+  padding:12px 14px 0;
+  gap:4px;
+}
+.mc-team-blk{
+  flex:1;
+  display:flex;flex-direction:column;align-items:center;
+  gap:5px;
+  min-width:0;
+}
+.mc-flag{
+  width:32px;height:22px;border-radius:3px;object-fit:cover;
+  border:.5px solid rgba(0,0,0,.08);display:block;background:transparent;flex-shrink:0;
+}
+.mc-tname{
+  font-size:12.5px;font-weight:500;color:var(--label);
+  text-align:center;line-height:1.2;
+  /* allow 2-line wrap for long names */
+  white-space:normal;word-break:break-word;
+}
+
+/* Row 2.5 — Rank (sits inside team block, below name) */
+.mc-rnk{
+  font-size:10px;font-weight:500;color:var(--l3);
+  text-align:center;line-height:1;
+  margin-top:-2px; /* tuck closer to name */
+}
+
+/* Center column — score or time */
+.mc-center{
+  width:72px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.score-row{display:flex;align-items:center;gap:3px}
+.sc-n{font-size:26px;font-weight:700;color:var(--label);line-height:1;
+  letter-spacing:-1px;min-width:14px;text-align:center}
+.sc-sep{font-size:18px;color:var(--l3);font-weight:300}
+.mc-min-lbl{font-size:10px;font-weight:500;color:var(--red);margin-top:1px}
+.mc-time-lbl{
+  font-size:22px;font-weight:600;color:var(--label);letter-spacing:-.5px;line-height:1;
+}
+
+/* Row 3 — Venue */
+.mc-row3{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px 11px;
+  margin-top:4px;
+  border-top:.5px solid var(--sep);
+  gap:8px;
+}
+/* Venue: stadium left, city+country right */
+.mc-venue-wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  flex:1;min-width:0;gap:6px;
+  cursor:pointer;text-decoration:none;
+  transition:opacity .15s ease;
+}
+.mc-venue-wrap:active{opacity:.6}
+.mc-venue-left{
+  display:flex;align-items:center;gap:5px;
+  min-width:0;flex-shrink:1;
+}
+.mc-stadium{
+  font-size:11.5px;color:var(--blue);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.mc-venue-right{
+  text-align:right;flex-shrink:0;white-space:nowrap;
+  font-size:11.5px;color:var(--l2);font-weight:400;
+}
+/* venue link styles moved to mc-venue-wrap */
+.mc-cal-btn{
+  width:26px;height:26px;border-radius:7px;background:var(--s3);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;
+  transition:transform .15s cubic-bezier(.34,1.56,.64,1);
+}
+.mc-cal-btn:active{transform:scale(.85)}
+
+/* ── CALENDAR MODAL (centered) ── */
+.cal-modal-overlay{
+  display:none;position:absolute;inset:0;
+  background:rgba(0,0,0,.45);border-radius:54px;z-index:400;
+  align-items:center;justify-content:center;
+  padding:0 24px;
+}
+.cal-modal-overlay.open{display:flex;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.cal-modal{
+  background:var(--surface);border-radius:18px;
+  width:100%;overflow:hidden;
+  animation:popIn .24s cubic-bezier(.34,1.3,.64,1);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.cal-modal-title{
+  font-size:13px;font-weight:600;color:var(--l2);
+  padding:14px 16px 10px;
+  letter-spacing:.03em;text-transform:uppercase;
+}
+.cal-match-label{
+  font-size:14px;font-weight:600;color:var(--label);
+  padding:0 16px 12px;letter-spacing:-.2px;
+}
+.cal-sep{height:.5px;background:var(--sep)}
+.cal-opt{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;cursor:pointer;
+  transition:background .1s ease;
+  border-top:.5px solid var(--sep);
+}
+.cal-opt:active,.cal-opt:hover{background:var(--s2)}
+.cal-opt-icon{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.cal-opt-icon.google{background:#EA4335}
+.cal-opt-icon.apple{background:#1C1C1E}
+.cal-opt-icon.android{background:#3DDC84}
+.cal-opt-icon.ics{background:var(--blue)}
+.cal-opt-text{}
+.cal-opt-label{font-size:14px;font-weight:500;color:var(--label);display:block}
+.cal-opt-sub{font-size:11.5px;color:var(--l3)}
+.cal-cancel{
+  display:flex;align-items:center;justify-content:center;
+  padding:14px 16px;cursor:pointer;
+  border-top:.5px solid var(--sep);
+  font-size:15px;font-weight:500;color:var(--blue);
+}
+.cal-cancel:active{opacity:.6}
+
+/* ── DATE PICKER OVERLAY ── */
+.dp-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.35);
+  border-radius:54px;z-index:300;align-items:flex-end}
+.dp-overlay.open{display:flex;animation:fadeIn .18s ease}
+.dp-sheet{width:100%;background:var(--surface);border-radius:24px 24px 0 0;
+  padding:0 0 40px;animation:slideUp .32s cubic-bezier(.34,1.2,.64,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.dp-handle{width:36px;height:4px;border-radius:2px;background:var(--l3);margin:10px auto 0}
+.dp-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 0}
+.dp-close{font-size:15px;font-weight:500;color:var(--blue);cursor:pointer;padding:4px}
+.dp-sheet-title{font-size:15px;font-weight:600;color:var(--label);letter-spacing:-.3px}
+.cal-wrap{padding:12px 16px 0;overflow-y:auto;max-height:400px}
+.cal-month{margin-bottom:16px}
+.cal-mname{font-size:13px;font-weight:600;color:var(--label);margin-bottom:8px;padding:0 4px}
+.cal-wds{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px}
+.cal-wd{text-align:center;font-size:10px;font-weight:500;color:var(--l3);
+  text-transform:uppercase;letter-spacing:.04em;padding:2px 0}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-day{height:36px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;border-radius:10px;cursor:pointer;position:relative;
+  transition:all .15s cubic-bezier(.34,1.56,.64,1)}
+.cal-day:active{transform:scale(.88)}
+.cal-day.empty,.cal-day.out{pointer-events:none}
+.cal-day.out .cal-day-n{color:var(--l3);opacity:.35}
+.cal-day.wc::after{content:'';position:absolute;bottom:3px;
+  width:4px;height:4px;border-radius:50%;background:var(--blue)}
+.cal-day.is-today .cal-day-n{color:var(--blue);font-weight:700}
+.cal-day.selected{background:var(--blue)}
+.cal-day.selected .cal-day-n{color:#fff;font-weight:700}
+.cal-day.selected::after{background:rgba(255,255,255,.65)}
+.cal-day-n{font-size:14px;font-weight:400;color:var(--label)}
+
+/* ── TOAST ── */
+.toast{position:absolute;bottom:100px;left:50%;
+  transform:translateX(-50%) translateY(8px);
+  background:rgba(0,0,0,.76);color:#fff;font-size:12px;font-weight:500;
+  padding:7px 14px;border-radius:20px;white-space:nowrap;opacity:0;z-index:600;
+  transition:opacity .2s ease,transform .2s cubic-bezier(.34,1.4,.64,1);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── TAB BAR ── */
+.tab-bar{height:calc(49px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border-top:.5px solid var(--sep);display:flex;align-items:flex-start;
+  padding-top:8px;flex-shrink:0;flex-shrink:0;z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding-top:2px;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
+.tab-item:active{transform:scale(.85)}
+.tab-label{font-size:10px;font-weight:500}
+.tab-item.on .tab-label{color:var(--blue)}
+.tab-item:not(.on) .tab-label{color:var(--gray)}
+</style>
+</head>
+<body>
+
+<div class="nav-bar">
+  <span class="nav-title">Schedule</span>
+  <div class="datepick-btn" onclick="openDP()">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="2" width="14" height="13" rx="2.5" stroke="#007AFF" stroke-width="1.3" fill="none"/>
+      <path d="M11 .5v3M5 .5v3M1 6h14" stroke="#007AFF" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+    <span id="pickLbl">Jun 17</span>
+    <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+      <path d="M1 1l4 4 4-4" stroke="#007AFF" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
+
+<div class="date-bar">
+  <div class="month-label-wrap"><div class="month-label" id="monthLbl">June 2026</div></div>
+  <div class="date-scroll" id="dateScroll"></div>
+</div>
+
+<div class="scroll-area" id="mainScroll">
+  <div id="scheduleContent"></div>
+  <div style="height:24px"></div>
+</div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <div class="tab-item" onclick="window.location.href='tab1.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 6h18M3 12h18M3 18h10" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="tab-label">Standings</span>
+  </div>
+  <div class="tab-item on">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="17" rx="3" stroke="#007AFF" stroke-width="1.8" fill="none"/>
+      <path d="M16 2v4M8 2v4M3 9h18" stroke="#007AFF" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="8" cy="14" r="1.2" fill="#007AFF"/>
+      <circle cx="12" cy="14" r="1.2" fill="#007AFF"/>
+    </svg>
+    <span class="tab-label">Schedule</span>
+  </div>
+  <div class="tab-item" onclick="window.location.href='tab3.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" stroke="#8E8E93" stroke-width="1.7" fill="none" stroke-linejoin="round"/>
+    </svg>
+    <span class="tab-label">Teams</span>
+  </div>
+  <div class="tab-item" onclick="window.location.href='tab4.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="4" stroke="#8E8E93" stroke-width="1.7" fill="none"/>
+      <path d="M5 20c0-3.31 3.13-6 7-6s7 2.69 7 6" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span class="tab-label">Players</span>
+  </div>
+</div>
+
+<!-- Date Picker Sheet -->
+<div class="dp-overlay" id="dpOverlay" onclick="closeDPOutside(event)">
+  <div class="dp-sheet">
+    <div class="dp-handle"></div>
+    <div class="dp-hd">
+      <div style="width:44px"></div>
+      <div class="dp-sheet-title">Jump to Date</div>
+      <div class="dp-close" onclick="closeDP()">Done</div>
+    </div>
+    <div class="cal-wrap" id="calWrap"></div>
+  </div>
+</div>
+
+<!-- Calendar Modal (centered) -->
+<div class="cal-modal-overlay" id="calModal" onclick="closeCalModal(event)">
+  <div class="cal-modal" onclick="event.stopPropagation()">
+    <div class="cal-modal-title">Add to Calendar</div>
+    <div class="cal-match-label" id="calMatchLabel">—</div>
+    <div class="cal-sep"></div>
+    <div class="cal-opt" id="optGoogle">
+      <div class="cal-opt-icon google">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="18" height="18" rx="2" fill="white"/>
+          <path d="M12 11v2.5h4a3.5 3.5 0 01-3.5 2.5 4 4 0 110-8 3.9 3.9 0 012.7 1.1l1.8-1.8A6.5 6.5 0 108 18.5" stroke="#EA4335" stroke-width="1.2" fill="none"/>
+        </svg>
+      </div>
+      <div class="cal-opt-text">
+        <span class="cal-opt-label">Google Calendar</span>
+        <span class="cal-opt-sub">Opens in browser</span>
+      </div>
+    </div>
+    <div class="cal-opt" id="optSystem">
+      <div class="cal-opt-icon apple">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M17.05 12.54c-.02-2.07 1.7-3.07 1.78-3.12-1-1.44-2.52-1.64-3.06-1.66-1.3-.13-2.55.77-3.21.77-.67 0-1.7-.75-2.8-.73-1.44.02-2.77.84-3.51 2.13-1.5 2.59-.38 6.43 1.07 8.53.72 1.03 1.57 2.18 2.69 2.14 1.08-.04 1.49-.69 2.8-.69 1.3 0 1.67.69 2.8.67 1.16-.02 1.89-1.05 2.6-2.08.82-1.19 1.16-2.34 1.18-2.4-.03-.01-2.32-.89-2.34-3.56z" fill="white"/>
+          <path d="M14.96 6.2c.59-.72.99-1.72.88-2.72-.85.03-1.88.57-2.49 1.27-.55.63-1.02 1.64-.89 2.61.94.07 1.9-.48 2.5-1.16z" fill="white"/>
+        </svg>
+      </div>
+      <div class="cal-opt-text">
+        <span class="cal-opt-label">System Calendar</span>
+        <span class="cal-opt-sub">Apple Calendar · Outlook · Android</span>
+      </div>
+    </div>
+    <div class="cal-cancel" onclick="closeCalModalDirect()">Cancel</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+
+
+<script>
+function goTeam(code){ sessionStorage.setItem('tab3_team',code); window.location.href='tab3.html'; }
+
+const MONTHS_S=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_F=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS_S=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAYS_F=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+const FIFA={us:13,pa:75,jm:57,hn:88,ar:1,cl:24,ca:49,bo:82,fr:2,ma:13,be:3,ge:74,
+  br:5,co:11,ec:32,py:65,es:8,pt:6,tr:37,al:67,'gb-eng':4,nl:7,ua:23,pl:20,
+  de:16,at:26,ch:19,hr:10,jp:18,kr:23,au:25,ir:21,it:9,ro:46,sn:20,ng:40,
+  dz:35,tn:27,mx:15,pe:68,uy:17,ve:51,sa:58,eg:39,iq:63,kw:152};
+
+const TNAMES={us:'United States',pa:'Panama',jm:'Jamaica',hn:'Honduras',ar:'Argentina',
+  cl:'Chile',ca:'Canada',bo:'Bolivia',fr:'France',ma:'Morocco',be:'Belgium',ge:'Georgia',
+  br:'Brazil',co:'Colombia',ec:'Ecuador',py:'Paraguay',es:'Spain',pt:'Portugal',
+  tr:'Turkey',al:'Albania','gb-eng':'England',nl:'Netherlands',ua:'Ukraine',pl:'Poland',
+  de:'Germany',at:'Austria',ch:'Switzerland',hr:'Croatia',jp:'Japan',kr:'S. Korea',
+  au:'Australia',ir:'Iran',it:'Italy',ro:'Romania',sn:'Senegal',ng:'Nigeria',
+  dz:'Algeria',tn:'Tunisia',mx:'Mexico',pe:'Peru',uy:'Uruguay',ve:'Venezuela',
+  sa:'Saudi Arabia',eg:'Egypt',iq:'Iraq',kw:'Kuwait'};
+
+const WC_START=new Date(2026,5,12),WC_END=new Date(2026,6,19),TODAY=new Date(2026,5,17);
+function dk(d){return MONTHS_S[d.getMonth()]+d.getDate()}
+function parseKey(k){
+  const m=k.match(/^([A-Za-z]+)(\d+)$/);
+  const mi=MONTHS_S.indexOf(m[1]),day=parseInt(m[2]);
+  return{monthIdx:mi,day,date:new Date(2026,mi,day)};
+}
+
+const STAGE_LABELS={R32:'Round of 32',R16:'Round of 16',QF:'Quarter-final',SF:'Semi-final',Final:'Final'};
+function stageLabel(g){return STAGE_LABELS[g]||('Group '+g)}
+function stageClass(g){if(g==='Final')return 'knockout final';if(STAGE_LABELS[g])return 'knockout';return '';}
+
+const FIXTURES=[
+  {date:'Jun12',group:'A',h:'mx',a:'jm',time:'15:00',stadium:'SoFi Stadium',city:'Los Angeles',country:'USA',status:'ft',hs:2,as:0},
+  {date:'Jun13',group:'B',h:'ar',a:'ca',time:'19:00',stadium:'MetLife Stadium',city:'E. Rutherford',country:'USA',status:'ft',hs:3,as:0},
+  {date:'Jun13',group:'C',h:'fr',a:'ge',time:'22:00',stadium:'AT&T Stadium',city:'Arlington',country:'USA',status:'ft',hs:3,as:0},
+  {date:'Jun14',group:'D',h:'br',a:'ec',time:'16:00',stadium:'Rose Bowl',city:'Pasadena',country:'USA',status:'ft',hs:2,as:1},
+  {date:'Jun14',group:'E',h:'es',a:'al',time:'19:00',stadium:'Levi\'s Stadium',city:'Santa Clara',country:'USA',status:'ft',hs:4,as:0},
+  {date:'Jun15',group:'F',h:'gb-eng',a:'ua',time:'19:00',stadium:'Lincoln Financial Field',city:'Philadelphia',country:'USA',status:'ft',hs:2,as:0},
+  {date:'Jun15',group:'G',h:'de',a:'ch',time:'22:00',stadium:'BC Place',city:'Vancouver',country:'Canada',status:'ft',hs:2,as:1},
+  {date:'Jun16',group:'H',h:'jp',a:'ir',time:'16:00',stadium:'Estadio Azteca',city:'Mexico City',country:'Mexico',status:'ft',hs:2,as:0},
+  {date:'Jun16',group:'A',h:'hn',a:'jm',time:'19:00',stadium:'Arrowhead Stadium',city:'Kansas City',country:'USA',status:'ft',hs:0,as:1},
+  {date:'Jun17',group:'A',h:'us',a:'pa',time:'16:00',stadium:'MetLife Stadium',city:'E. Rutherford',country:'USA',status:'live',hs:2,as:1,min:'74'},
+  {date:'Jun17',group:'B',h:'ar',a:'cl',time:'19:00',stadium:'SoFi Stadium',city:'Inglewood',country:'USA',status:'upcoming'},
+  {date:'Jun17',group:'C',h:'fr',a:'ma',time:'22:00',stadium:'AT&T Stadium',city:'Arlington',country:'USA',status:'ft',hs:3,as:0},
+  {date:'Jun17',group:'D',h:'br',a:'co',time:'22:00',stadium:'Rose Bowl',city:'Pasadena',country:'USA',status:'upcoming'},
+  {date:'Jun18',group:'E',h:'es',a:'pt',time:'16:00',stadium:'Levi\'s Stadium',city:'Santa Clara',country:'USA',status:'upcoming'},
+  {date:'Jun18',group:'F',h:'gb-eng',a:'nl',time:'19:00',stadium:'GEHA Field',city:'Kansas City',country:'USA',status:'upcoming'},
+  {date:'Jun18',group:'G',h:'de',a:'hr',time:'22:00',stadium:'Lincoln Financial Field',city:'Philadelphia',country:'USA',status:'upcoming'},
+  {date:'Jun19',group:'H',h:'jp',a:'kr',time:'16:00',stadium:'BC Place',city:'Vancouver',country:'Canada',status:'upcoming'},
+  {date:'Jun19',group:'A',h:'mx',a:'us',time:'19:00',stadium:'Estadio Azteca',city:'Mexico City',country:'Mexico',status:'upcoming'},
+  {date:'Jun19',group:'B',h:'ca',a:'bo',time:'22:00',stadium:'Arrowhead Stadium',city:'Kansas City',country:'USA',status:'upcoming'},
+  {date:'Jun20',group:'C',h:'be',a:'ge',time:'16:00',stadium:'MetLife Stadium',city:'E. Rutherford',country:'USA',status:'upcoming'},
+  {date:'Jun20',group:'D',h:'ec',a:'py',time:'19:00',stadium:'Rose Bowl',city:'Pasadena',country:'USA',status:'upcoming'},
+  {date:'Jun21',group:'E',h:'tr',a:'al',time:'16:00',stadium:'SoFi Stadium',city:'Inglewood',country:'USA',status:'upcoming'},
+  {date:'Jun21',group:'F',h:'ua',a:'pl',time:'19:00',stadium:'AT&T Stadium',city:'Arlington',country:'USA',status:'upcoming'},
+  {date:'Jun22',group:'G',h:'at',a:'hr',time:'16:00',stadium:'Levi\'s Stadium',city:'Santa Clara',country:'USA',status:'upcoming'},
+  {date:'Jun22',group:'H',h:'au',a:'ir',time:'19:00',stadium:'BC Place',city:'Vancouver',country:'Canada',status:'upcoming'},
+  {date:'Jun25',group:'A',h:'us',a:'hn',time:'16:00',stadium:'MetLife Stadium',city:'E. Rutherford',country:'USA',status:'upcoming'},
+  {date:'Jun25',group:'A',h:'pa',a:'jm',time:'16:00',stadium:'Arrowhead Stadium',city:'Kansas City',country:'USA',status:'upcoming'},
+  {date:'Jul1', group:'L',h:'sa',a:'eg', time:'20:00',stadium:'Rose Bowl',city:'Pasadena',country:'USA',status:'upcoming'},
+  {date:'Jul4', group:'R32',h:'ar',a:'hn',time:'20:00',stadium:'MetLife Stadium',city:'E. Rutherford',country:'USA',status:'upcoming'},
+  {date:'Jul9', group:'R16',h:'fr',a:'es',time:'20:00',stadium:'AT&T Stadium',city:'Arlington',country:'USA',status:'upcoming'},
+  {date:'Jul14',group:'QF', h:'br',a:'de',time:'20:00',stadium:'Rose Bowl',city:'Pasadena',country:'USA',status:'upcoming'},
+  {date:'Jul18',group:'SF', h:'ar',a:'fr',time:'20:00',stadium:'MetLife Stadium',city:'E. Rutherford',country:'USA',status:'upcoming'},
+  {date:'Jul19',group:'Final',h:'ar',a:'es',time:'20:00',stadium:'MetLife Stadium',city:'E. Rutherford',country:'USA',status:'upcoming'},
+];
+const fixtureDates=new Set(FIXTURES.map(f=>f.date));
+
+// ── DATE STRIP ──
+function buildStrip(){
+  const scroll=document.getElementById('dateScroll');
+  let d=new Date(WC_START);
+  while(d<=WC_END){
+    const key=dk(d),isToday=d.getTime()===TODAY.getTime(),hasFix=fixtureDates.has(key);
+    const chip=document.createElement('div');
+    chip.className='date-chip'+(isToday?' today active':'')+(hasFix?'':' no-match');
+    chip.dataset.date=key;chip.dataset.month=d.getMonth();
+    chip.innerHTML=`<span class="dc-day">${DAYS_S[d.getDay()]}</span>
+      <span class="dc-num">${d.getDate()}</span>
+      ${hasFix?'<div class="dc-dot"></div>':'<div class="dc-empty"></div>'}`;
+    chip.addEventListener('click',()=>goDate(key,chip));
+    scroll.appendChild(chip);
+    d.setDate(d.getDate()+1);
+  }
+  setTimeout(()=>{const a=scroll.querySelector('.active');if(a)chipCenter(a,false);},50);
+}
+
+// ── MONTH LABEL ──
+let curMonth=TODAY.getMonth();
+function setMonthLabel(m){
+  if(m===curMonth)return;
+  const lbl=document.getElementById('monthLbl');
+  lbl.classList.add('exit-left');
+  setTimeout(()=>{
+    lbl.textContent=MONTHS_F[m]+' 2026';
+    curMonth=m;
+    lbl.classList.remove('exit-left');
+    lbl.classList.add('enter-right');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>lbl.classList.remove('enter-right')));
+  },160);
+}
+
+// ── BUILD SCHEDULE ──
+function buildSchedule(){
+  const container=document.getElementById('scheduleContent');
+  const byDate={};
+  FIXTURES.forEach((f,idx)=>{
+    if(!byDate[f.date])byDate[f.date]=[];
+    byDate[f.date].push({...f,idx});
+  });
+  const keys=Object.keys(byDate).sort((a,b)=>{
+    const pa=parseKey(a),pb=parseKey(b);
+    return(pa.monthIdx*100+pa.day)-(pb.monthIdx*100+pb.day);
+  });
+  keys.forEach((key,gi)=>{
+    const fixtures=byDate[key];
+    const{monthIdx,day,date}=parseKey(key);
+    const sec=document.createElement('div');
+    sec.className='date-group';sec.id='date-'+key;
+    sec.innerHTML=`<div class="dg-hd">
+        <span class="dg-title">${DAYS_F[date.getDay()]}, ${MONTHS_F[monthIdx]} ${day}</span>
+        <span class="dg-count">${fixtures.length} match${fixtures.length>1?'es':''}</span>
+      </div>
+      ${fixtures.map(buildCard).join('')}`;
+    container.appendChild(sec);
+    if(gi<keys.length-1)container.insertAdjacentHTML('beforeend','<div class="dg-div"></div>');
+  });
+}
+
+function buildCard(f){
+  const hName=TNAMES[f.h]||f.h,aName=TNAMES[f.a]||f.a;
+  const hRk=FIFA[f.h]||'–',aRk=FIFA[f.a]||'–';
+  const isLive=f.status==='live',isFt=f.status==='ft',isUp=f.status==='upcoming';
+  const sLabel=stageLabel(f.group);
+  const sCls=stageClass(f.group);
+
+  const liveBadge=isLive?`<div class="live-badge"><div class="live-dot"></div>${f.min}'</div>`:'';
+
+  // Center column
+  let center='';
+  if(isLive||isFt){
+    center=`<div class="score-row"><span class="sc-n">${f.hs}</span><span class="sc-sep">:</span><span class="sc-n">${f.as}</span></div>`
+      +(isLive?`<div class="mc-min-lbl">${f.min}'</div>`:'');
+  } else {
+    center=`<div class="mc-time-lbl">${f.time}</div>`;
+  }
+
+  // Venue maps URL (stadium + city + country)
+  const venueQ=encodeURIComponent((f.stadium||'')+', '+(f.city||'')+', '+(f.country||''));
+  const mapsURL=`https://maps.google.com/?q=${venueQ}`;
+
+  // Cal button top-right (upcoming only)
+  const calBtn=isUp?`<div class="mc-cal-btn" onclick="openCalModal(event,${f.idx})">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="2" width="14" height="13" rx="2.5" stroke="#007AFF" stroke-width="1.3" fill="none"/>
+      <path d="M11 .5v3M5 .5v3M1 6h14" stroke="#007AFF" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M8 10v2m-1-1h2" stroke="#007AFF" stroke-width="1.3" stroke-linecap="round"/>
+    </svg>
+  </div>`:'<div style="width:26px"></div>';
+
+  return `
+<div class="match-card${isLive?' live':''}">
+  <!-- Row 1: Stage + cal button top-right -->
+  <div class="mc-row1">
+    <span class="mc-stage ${sCls}">${sLabel}</span>
+    <div style="display:flex;align-items:center;gap:6px">${liveBadge}${calBtn}</div>
+  </div>
+  <!-- Row 2 + 2.5: Teams, score, rankings -->
+  <div class="mc-row2">
+    <!-- Home team -->
+    <div class="mc-team-blk" onclick="event.stopPropagation();goTeam('${f.h}')" style="cursor:pointer">
+      <img class="mc-flag" src="https://flagcdn.com/w40/${f.h}.png" alt="${hName}" loading="lazy">
+      <span class="mc-tname">${hName}</span>
+      <span class="mc-rnk">#${hRk}</span>
+    </div>
+    <!-- Center -->
+    <div class="mc-center">${center}</div>
+    <!-- Away team -->
+    <div class="mc-team-blk" onclick="event.stopPropagation();goTeam('${f.a}')" style="cursor:pointer">
+      <img class="mc-flag" src="https://flagcdn.com/w40/${f.a}.png" alt="${aName}" loading="lazy">
+      <span class="mc-tname">${aName}</span>
+      <span class="mc-rnk">#${aRk}</span>
+    </div>
+  </div>
+  <!-- Row 3: Stadium left, City+Country right -->
+  <div class="mc-row3">
+    <a class="mc-venue-wrap" href="${mapsURL}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+      <div class="mc-venue-left">
+        <svg width="9" height="12" viewBox="0 0 10 13" fill="none" style="flex-shrink:0">
+          <path d="M5 1C3.07 1 1.5 2.57 1.5 4.5c0 2.8 3.5 6.8 3.5 6.8s3.5-4 3.5-6.8C8.5 2.57 6.93 1 5 1z" stroke="#007AFF" stroke-width="1.1" fill="rgba(0,122,255,.12)"/>
+          <circle cx="5" cy="4.5" r="1.3" fill="#007AFF"/>
+        </svg>
+        <span class="mc-stadium">${f.stadium||''}</span>
+      </div>
+      <div class="mc-venue-right">${f.city||''}, ${f.country||''}</div>
+    </a>
+  </div>
+</div>`;
+}
+
+// ── NAVIGATION ──
+function chipCenter(el,smooth=true){
+  const sc=document.getElementById('dateScroll');
+  sc.scrollTo({left:el.offsetLeft-sc.offsetWidth/2+el.offsetWidth/2,behavior:smooth?'smooth':'instant'});
+}
+function goDate(key,el){
+  document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');chipCenter(el);
+  const{monthIdx,day}=parseKey(key);
+  setMonthLabel(monthIdx);
+  document.getElementById('pickLbl').textContent=MONTHS_S[monthIdx]+' '+day;
+  const sec=document.getElementById('date-'+key);
+  if(!sec)return;
+  const ms=document.getElementById('mainScroll');
+  ms.scrollTo({top:sec.getBoundingClientRect().top-ms.getBoundingClientRect().top+ms.scrollTop-6,behavior:'smooth'});
+}
+function setupObs(){
+  const ms=document.getElementById('mainScroll');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting)return;
+      const key=e.target.id.replace('date-','');
+      document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('active'));
+      const chip=document.querySelector(`[data-date="${key}"]`);
+      if(!chip)return;
+      chip.classList.add('active');chipCenter(chip);
+      const{monthIdx,day}=parseKey(key);
+      setMonthLabel(monthIdx);
+      document.getElementById('pickLbl').textContent=MONTHS_S[monthIdx]+' '+day;
+    });
+  },{root:ms,rootMargin:'-30% 0px -60% 0px',threshold:0});
+  document.querySelectorAll('.date-group').forEach(s=>obs.observe(s));
+}
+
+// ── DATE PICKER ──
+function buildCal(){
+  const wrap=document.getElementById('calWrap');
+  [[2026,5,'June 2026'],[2026,6,'July 2026']].forEach(([yr,mo,label])=>{
+    const div=document.createElement('div');div.className='cal-month';
+    const first=new Date(yr,mo,1).getDay(),total=new Date(yr,mo+1,0).getDate();
+    let cells='';
+    for(let i=0;i<first;i++)cells+='<div class="cal-day empty"></div>';
+    for(let d=1;d<=total;d++){
+      const dt=new Date(yr,mo,d),key=dk(dt);
+      const inWC=dt>=WC_START&&dt<=WC_END;
+      const isToday=dt.getTime()===TODAY.getTime();
+      let cls='cal-day';
+      if(!inWC)cls+=' out';
+      if(fixtureDates.has(key))cls+=' wc';
+      if(isToday)cls+=' is-today';
+      cells+=`<div class="${cls}" data-date="${key}" onclick="pickDate('${key}')"><span class="cal-day-n">${d}</span></div>`;
+    }
+    div.innerHTML=`<div class="cal-mname">${label}</div>
+      <div class="cal-wds">${['S','M','T','W','T','F','S'].map(w=>`<div class="cal-wd">${w}</div>`).join('')}</div>
+      <div class="cal-days">${cells}</div>`;
+    wrap.appendChild(div);
+  });
+}
+function openDP(){document.getElementById('dpOverlay').classList.add('open');}
+function closeDP(){document.getElementById('dpOverlay').classList.remove('open');}
+function closeDPOutside(e){if(e.target===document.getElementById('dpOverlay'))closeDP();}
+function pickDate(key){
+  closeDP();
+  document.querySelectorAll('.cal-day').forEach(d=>d.classList.toggle('selected',d.dataset.date===key));
+  const chip=document.querySelector(`[data-date="${key}"]`);
+  if(chip)goDate(key,chip);
+}
+
+// ── CALENDAR MODAL ──
+let activeFixIdx=null;
+function openCalModal(e,idx){
+  e.stopPropagation();
+  activeFixIdx=idx;
+  const f=FIXTURES[idx];
+  const hName=TNAMES[f.h]||f.h,aName=TNAMES[f.a]||f.a;
+  document.getElementById('calMatchLabel').textContent=hName+' vs '+aName+' · '+f.time;
+  document.getElementById('calModal').classList.add('open');
+}
+function closeCalModal(e){if(e.target===document.getElementById('calModal'))closeCalModalDirect();}
+function closeCalModalDirect(){document.getElementById('calModal').classList.remove('open');}
+
+function makeICS(f){
+  const hName=TNAMES[f.h]||f.h,aName=TNAMES[f.a]||f.a;
+  const{monthIdx,day}=parseKey(f.date);
+  const mm=String(monthIdx+1).padStart(2,'0'),dd=String(day).padStart(2,'0');
+  const[hh,mi]=f.time.split(':');
+  const dtS=`2026${mm}${dd}T${hh}${mi}00`,dtE=`2026${mm}${dd}T${String(parseInt(hh)+2).padStart(2,'0')}${mi}00`;
+  return `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//WC2026//EN\r\nBEGIN:VEVENT\r\nSUMMARY:${hName} vs ${aName}\r\nDTSTART:${dtS}\r\nDTEND:${dtE}\r\nLOCATION:${f.stadium||''}, ${f.city||''}, ${f.country||''}\r\nDESCRIPTION:FIFA World Cup 2026 - ${stageLabel(f.group)}\r\nEND:VEVENT\r\nEND:VCALENDAR`;
+}
+function makeGCal(f){
+  const hName=TNAMES[f.h]||f.h,aName=TNAMES[f.a]||f.a;
+  const{monthIdx,day}=parseKey(f.date);
+  const mm=String(monthIdx+1).padStart(2,'0'),dd=String(day).padStart(2,'0');
+  const[hh,mi]=f.time.split(':');
+  const dtS=`2026${mm}${dd}T${hh}${mi}00`,dtE=`2026${mm}${dd}T${String(parseInt(hh)+2).padStart(2,'0')}${mi}00`;
+  return`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(hName+' vs '+aName)}&dates=${dtS}/${dtE}&location=${encodeURIComponent((f.stadium||'')+', '+(f.city||'')+', '+(f.country||''))}&details=${encodeURIComponent('FIFA World Cup 2026 - '+stageLabel(f.group))}`;
+}
+
+document.getElementById('optGoogle').addEventListener('click',()=>{
+  if(activeFixIdx===null)return;
+  window.open(makeGCal(FIXTURES[activeFixIdx]),'_blank');
+  closeCalModalDirect();showToast('Opening Google Calendar…');
+});
+document.getElementById('optSystem').addEventListener('click',()=>{
+  if(activeFixIdx===null)return;
+  const blob=new Blob([makeICS(FIXTURES[activeFixIdx])],{type:'text/calendar'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='wc2026.ics';a.click();
+  URL.revokeObjectURL(url);
+  closeCalModalDirect();showToast('Calendar file downloaded');
+});
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+buildStrip();buildSchedule();buildCal();setupObs();
+const _pendingDate=sessionStorage.getItem('tab2_date');
+if(_pendingDate){
+  sessionStorage.removeItem('tab2_date');
+  setTimeout(()=>{const chip=document.querySelector(`[data-date="${_pendingDate}"]`);if(chip)goDate(_pendingDate,chip);},100);
+}
+</script>
+
+</body>
+</html>

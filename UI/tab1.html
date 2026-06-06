@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;height:-webkit-fill-available">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>FIFA World Cup 2026 · Tab 1 v5</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F2F7;--surface:#FFFFFF;--surface2:#F2F2F7;--surface3:rgba(120,120,128,.12);
+  --label:#000;--label2:rgba(60,60,67,.6);--label3:rgba(60,60,67,.3);--sep:rgba(60,60,67,.12);
+  --blue:#007AFF;--green:#34C759;--red:#FF3B30;--orange:#FF9500;--gray:#8E8E93;
+  --gold:#B8860B;
+  --font:-apple-system,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;
+  --r:16px;
+}
+body{
+  background:var(--bg);font-family:var(--font);
+  display:flex;flex-direction:column;
+  /* Lock to exact viewport — prevents whole-page scroll */
+  height:100vh;
+  height:-webkit-fill-available;
+  overflow:hidden;
+  padding:0;margin:0;
+  padding-top:env(safe-area-inset-top);
+}
+
+/* ── STATUS BAR ── */
+/* ── NAV BAR ── */
+.nav-bar{height:44px;padding:0 16px;display:flex;align-items:center;
+  justify-content:space-between;background:var(--surface);
+  border-bottom:.5px solid var(--sep);
+  flex-shrink:0;          /* does not shrink in flex column */
+  position:sticky;top:0;  /* sticks to top of scroll container */
+  z-index:60}
+.nav-title{font-size:17px;font-weight:600;color:var(--label);letter-spacing:-.4px}
+/* Stage selector pill */
+.stage-btn{display:flex;align-items:center;gap:5px;
+  background:var(--surface3);border-radius:14px;padding:5px 10px 5px 10px;
+  cursor:pointer;transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+  -webkit-tap-highlight-color:transparent}
+.stage-btn:active{transform:scale(.93)}
+.stage-btn-label{font-size:12px;font-weight:600;color:var(--blue);white-space:nowrap}
+/* Dropdown */
+.stage-menu{
+  position:absolute;top:52px;right:16px;
+  background:rgba(255,255,255,.96);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border-radius:14px;overflow:hidden;
+  box-shadow:0 4px 24px rgba(0,0,0,.15),0 1px 4px rgba(0,0,0,.08);
+  z-index:200;min-width:180px;
+  transform-origin:top right;
+  transform:scale(.9);opacity:0;pointer-events:none;
+  transition:transform .2s cubic-bezier(.34,1.3,.64,1),opacity .15s ease}
+.stage-menu.open{transform:scale(1);opacity:1;pointer-events:auto}
+.stage-opt{padding:13px 16px;font-size:15px;color:var(--label);cursor:pointer;
+  border-bottom:.5px solid var(--sep);display:flex;align-items:center;
+  justify-content:space-between;gap:8px;transition:background .1s ease}
+.stage-opt:last-child{border-bottom:none}
+.stage-opt:active{background:var(--surface2)}
+.stage-opt.active-opt{font-weight:600;color:var(--blue)}
+.stage-opt-check{font-size:15px;color:var(--blue)}
+
+/* ── SELECTOR BAR (group chips OR round chips — same visual) ── */
+.selector-bar{
+  position:sticky;top:0;
+  background:rgba(255,255,255,.92);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-bottom:.5px solid var(--sep);flex-shrink:0;z-index:50}
+.sel-scroll{display:flex;overflow-x:auto;padding:10px 8px 10px 16px;gap:8px;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}
+.sel-scroll::-webkit-scrollbar{display:none}
+.sel-chip{flex-shrink:0;width:76px;padding:6px 0;text-align:center;
+  border-radius:22px;font-size:14px;font-weight:500;color:var(--label2);
+  cursor:pointer;transition:all .22s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;user-select:none;-webkit-tap-highlight-color:transparent;
+  scroll-snap-align:start}
+.sel-chip:active{transform:scale(.9)}
+.sel-chip.active{background:var(--blue);color:#fff;font-weight:600}
+/* Knockout round chips — slightly narrower */
+.sel-chip.ko{width:60px;font-size:13px}
+
+/* ── SCROLL AREA ── */
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;min-height:0}
+.scroll-area::-webkit-scrollbar{display:none}
+
+/* ── TODAY'S MATCHES ── */
+.today-wrap{padding:14px 0 2px;background:var(--bg);
+  border-bottom:.5px solid var(--sep)}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--label3);padding:0 16px 10px}
+.today-scroll{display:flex;gap:10px;overflow-x:auto;
+  padding:0 8px 12px 14px;  /* 14px left margin so cards have clear breathing room */
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  scroll-snap-type:x mandatory;scroll-padding-left:14px}
+.today-scroll::-webkit-scrollbar{display:none}
+.match-card{flex-shrink:0;width:165px;background:var(--surface);border-radius:18px;
+  padding:11px 12px 13px;cursor:pointer;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 1px 4px rgba(0,0,0,.08);-webkit-tap-highlight-color:transparent;
+  scroll-snap-align:start}
+.match-card:active{transform:scale(.95)}
+.mc-top{display:flex;align-items:center;margin-bottom:11px}
+.mc-status{font-size:10.5px;font-weight:600}
+.mc-status.live{color:var(--red);display:flex;align-items:center;gap:4px}
+.mc-status.ft{color:var(--gray)}
+.mc-status.soon{color:var(--blue)}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--red);
+  animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.65)}}
+.mc-grp{font-size:10px;color:var(--label3)}
+.mc-teams{display:flex;align-items:center;}
+.mc-team{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.mc-badge-wrap{width:36px;height:36px;border-radius:50%;overflow:hidden;
+  border:1.5px solid rgba(0,0,0,.07);flex-shrink:0;background:#f0f0f5;display:block}
+.mc-badge-img{width:auto;height:100%;min-width:100%;object-fit:cover;display:block}
+.mc-name{font-size:11px;font-weight:500;color:var(--label2);white-space:nowrap;text-align:center}
+.mc-score-col{flex-shrink:0;min-width:50px;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.mc-scores{display:flex;align-items:center;gap:4px}
+.mc-score{font-size:22px;font-weight:700;color:var(--label);line-height:1;
+  letter-spacing:-.8px;min-width:13px;text-align:center}
+.mc-sep{font-size:16px;color:var(--label3);font-weight:300}
+.mc-vs{font-size:14px;font-weight:600;color:var(--label3)}
+
+/* ── GROUP STAGE SECTIONS ── */
+.group-section{padding:20px 0 8px}
+.gsec-hd{display:flex;align-items:baseline;justify-content:space-between;padding:0 16px 10px}
+.gsec-title{font-size:20px;font-weight:700;color:var(--label);letter-spacing:-.5px}
+.gsec-sub{font-size:12px;color:var(--label3)}
+.table-wrap{background:var(--surface);margin:0 14px;border-radius:var(--r);
+  overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+
+/* Header columns */
+.col-hd-row{display:flex;align-items:center;padding:7px 12px 7px 10px;
+  background:#F9F9F9;border-bottom:.5px solid var(--sep)}
+.ph-pos{width:14px;margin-right:6px;flex-shrink:0}
+.ph-flag{width:26px;margin-right:8px;flex-shrink:0}
+.ch-team{flex:1;min-width:0;font-size:11px;font-weight:500;color:var(--label3);
+  text-transform:uppercase;letter-spacing:.04em}
+.ch{text-align:center;font-size:11px;font-weight:500;color:var(--label3);
+  text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.ch.stat{width:22px}
+.ch.gd{width:26px}
+.ch.pts{width:24px;color:var(--label2);font-weight:600}
+.ch.chev-ph{width:11px}
+
+/* Data rows */
+.team-row{display:flex;align-items:center;padding:9px 12px 9px 10px;
+  border-bottom:.5px solid var(--sep);cursor:pointer;position:relative;
+  transition:background .1s ease;-webkit-tap-highlight-color:transparent}
+.team-row:last-child{border-bottom:none}
+.team-row:active{background:var(--surface2)}
+.qbar{position:absolute;left:0;top:5px;bottom:5px;width:2.5px;border-radius:2px}
+.qbar.q{background:var(--green)}
+.t-pos{width:14px;margin-right:6px;text-align:center;font-size:11.5px;font-weight:500;
+  color:var(--label3);flex-shrink:0}
+.t-flag{width:26px;height:18px;border-radius:3px;object-fit:cover;flex-shrink:0;
+  border:.5px solid rgba(0,0,0,.08);margin-right:8px;display:block;background:#eee}
+.t-name-col{flex:1;min-width:0}
+/* Team name */
+.t-name{font-size:13.5px;font-weight:500;color:var(--label);letter-spacing:-.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Rank column — fixed width, vertically aligned across all rows */
+.cv.rank{width:30px;font-size:11.5px;font-weight:500;color:var(--label3);
+  text-align:right;flex-shrink:0}
+.ch.rank{width:30px;text-align:right}
+.rank-bar-wrap{margin-top:3px}
+.rank-bar{border-radius:2px;display:block;transition:width .4s ease}
+.cv{text-align:center;font-size:13px;color:var(--label2);flex-shrink:0}
+.cv.stat{width:22px}
+.cv.gd{width:26px}
+.cv.gd.pos{color:#1C7A3E;font-weight:500}
+.cv.gd.neg{color:var(--red);font-weight:500}
+.cv.pts{width:24px;font-size:14px;font-weight:700;color:var(--label)}
+.row-chev{width:7px;opacity:.2;flex-shrink:0;margin-left:4px}
+.group-legend{display:flex;gap:14px;padding:8px 14px 4px;margin:0 14px}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-bar{width:3px;height:11px;border-radius:2px}
+.leg-text{font-size:10.5px;color:var(--label3)}
+.sec-div{height:6px;background:var(--bg);margin:16px 0 0}
+
+/* ── KNOCKOUT STAGE — horizontal layout ── */
+.ko-section{padding:20px 0 8px}
+.ko-hd{display:flex;align-items:center;justify-content:space-between;padding:0 16px 10px}
+.ko-title{font-size:20px;font-weight:700;color:var(--label);letter-spacing:-.5px}
+.ko-date-lbl{font-size:12px;color:var(--label3)}
+
+/* KO card — visual DNA from table-wrap */
+.koc{
+  background:var(--surface);margin:0 14px 10px;
+  border-radius:var(--r);overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1);
+}
+.koc:active{transform:scale(.985)}
+/* Card header: stage tag + status */
+.koc-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px 0;
+}
+.koc-stage{font-size:10.5px;font-weight:600;color:var(--label3);
+  text-transform:uppercase;letter-spacing:.04em}
+.koc-status{font-size:10.5px;font-weight:600}
+.koc-status.ft{color:var(--gray)}
+.koc-status.live{color:var(--red);display:flex;align-items:center;gap:4px}
+.koc-status.soon{color:var(--blue)}
+/* Teams row — horizontal, symmetric */
+.koc-teams{
+  display:flex;align-items:center;
+  padding:10px 14px 10px;gap:4px;
+}
+/* Team column: flag → name → rank, centered */
+.koc-team{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;
+}
+/* Winner visual: name bolder, flag gets green outline */
+.koc-team.won .koc-tname{font-weight:700}
+.koc-team.won .koc-flag{box-shadow:0 0 0 1.5px var(--green)}
+.koc-team.lost .koc-tname{color:var(--label2)}
+.koc-team.lost .koc-flag{opacity:.65}
+/* Flag — same spec as group stage: 26×18 rounded rect */
+.koc-flag{width:32px;height:22px;border-radius:3px;object-fit:cover;
+  border:.5px solid rgba(0,0,0,.08);display:block;flex-shrink:0;background:#eee}
+.koc-tname{font-size:13px;font-weight:500;color:var(--label);
+  text-align:center;letter-spacing:-.2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.koc-rank{font-size:10px;font-weight:400;color:var(--label3)}
+/* Center: score (completed) or time+date (upcoming) or live score */
+.koc-mid{
+  width:72px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+}
+.koc-score-row{display:flex;align-items:center;gap:3px}
+.koc-sn{font-size:24px;font-weight:700;color:var(--label);line-height:1;
+  letter-spacing:-1px;min-width:14px;text-align:center}
+.koc-sn.dim{color:var(--label3);font-weight:500}
+.koc-ssep{font-size:18px;color:var(--label3);font-weight:300}
+.koc-min{font-size:9.5px;font-weight:600;color:var(--red);margin-top:1px}
+.koc-time-big{font-size:20px;font-weight:600;color:var(--label);letter-spacing:-.5px;line-height:1}
+.koc-time-date{font-size:10px;color:var(--label3);margin-top:1px}
+.koc-vs{font-size:15px;font-weight:600;color:var(--label3)}
+/* Penalty footer */
+.koc-pen{
+  font-size:10.5px;color:var(--label2);font-weight:500;
+  padding:5px 14px 10px;text-align:center;
+  border-top:.5px solid var(--sep);
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+
+/* ── TAB BAR ── */
+.tab-bar{
+  height:calc(49px + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border-top:.5px solid var(--sep);
+  display:flex;align-items:flex-start;padding-top:8px;
+  flex-shrink:0;
+  z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding-top:2px;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1);-webkit-tap-highlight-color:transparent}
+.tab-item:active{transform:scale(.85)}
+.tab-label{font-size:10px;font-weight:500}
+.tab-item.on .tab-label{color:var(--blue)}
+.tab-item:not(.on) .tab-label{color:var(--gray)}
+</style>
+</head>
+<body>
+
+<!-- Nav Bar -->
+<div class="nav-bar">
+  <div style="width:32px"></div>
+  <span class="nav-title">FIFA World Cup 2026</span>
+  <!-- Stage selector pill -->
+  <div class="stage-btn" id="stageBtn" onclick="toggleMenu()">
+    <span class="stage-btn-label" id="stageBtnLabel">Group Stage</span>
+    <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
+      <path d="M1 1l4 4 4-4" stroke="#007AFF" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <!-- Dropdown -->
+  <div class="stage-menu" id="stageMenu">
+    <div class="stage-opt active-opt" id="opt-group" onclick="setStage('group')">
+      Group Stage <span class="stage-opt-check">✓</span>
+    </div>
+    <div class="stage-opt" id="opt-knockout" onclick="setStage('knockout')">
+      Knockout Stage <span class="stage-opt-check" style="display:none">✓</span>
+    </div>
+  </div>
+</div>
+
+<!-- Selector Bar (group chips or round chips) -->
+<div class="selector-bar">
+  <div class="sel-scroll" id="selScroll">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- Scroll Area -->
+<div class="scroll-area" id="mainScroll">
+
+  <!-- Today's Matches — hidden if no games today -->
+  <div class="today-wrap" id="todayWrap">
+    <div class="eyebrow">Today's Matches</div>
+    <div class="today-scroll" id="todayScroll">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- Content (groups or KO bracket) -->
+  <div id="mainContent"></div>
+  <div style="height:20px"></div>
+
+</div><!-- /scroll-area -->
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <div class="tab-item on">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 6h18M3 12h18M3 18h10" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="tab-label">Standings</span>
+  </div>
+  <div class="tab-item" onclick="window.location.href='tab2.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="17" rx="3" stroke="#8E8E93" stroke-width="1.7" fill="none"/>
+      <path d="M16 2v4M8 2v4M3 9h18" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <span class="tab-label">Schedule</span>
+  </div>
+  <div class="tab-item" onclick="window.location.href='tab3.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" stroke="#8E8E93" stroke-width="1.7" fill="none" stroke-linejoin="round"/>
+    </svg>
+    <span class="tab-label">Teams</span>
+  </div>
+  <div class="tab-item" onclick="window.location.href='tab4.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="8" r="4" stroke="#8E8E93" stroke-width="1.7" fill="none"/>
+      <path d="M5 20c0-3.31 3.13-6 7-6s7 2.69 7 6" stroke="#8E8E93" stroke-width="1.7" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span class="tab-label">Players</span>
+  </div>
+</div>
+
+</div><!-- /screen -->
+
+<script>
+// ─── CONFIG ───────────────────────────────────────
+// Change DEMO_DATE to simulate different tournament phases
+const DEMO_DATE       = new Date(2026, 5, 17); // June 17 → Group Stage
+// const DEMO_DATE    = new Date(2026, 6, 4);  // July 4  → Knockout Stage
+const KO_START        = new Date(2026, 5, 28); // June 28
+const isKO_Phase      = DEMO_DATE >= KO_START;
+let   currentStage    = isKO_Phase ? 'knockout' : 'group';
+const hasTodayMatches = true; // set false to hide Today's Matches section
+
+// ─── GROUP DATA ───────────────────────────────────
+const GROUPS = {
+  A:{ r:'Round 2', t:[
+    {c:'us', n:'United States', fifa:13, p:2,w:1,d:1,l:0,g:2, pt:4},
+    {c:'pa', n:'Panama',        fifa:75, p:2,w:1,d:0,l:1,g:-1,pt:3},
+    {c:'jm', n:'Jamaica',       fifa:57, p:2,w:0,d:2,l:0,g:0, pt:2},
+    {c:'hn', n:'Honduras',      fifa:88, p:2,w:0,d:1,l:1,g:-1,pt:1},
+  ]},
+  B:{ r:'Round 2', t:[
+    {c:'ar', n:'Argentina',  fifa:1,  p:2,w:2,d:0,l:0,g:5, pt:6},
+    {c:'cl', n:'Chile',      fifa:24, p:2,w:1,d:0,l:1,g:1, pt:3},
+    {c:'ca', n:'Canada',     fifa:49, p:2,w:1,d:0,l:1,g:-2,pt:3},
+    {c:'bo', n:'Bolivia',    fifa:82, p:2,w:0,d:0,l:2,g:-4,pt:0},
+  ]},
+  C:{ r:'Round 2', t:[
+    {c:'fr', n:'France',   fifa:2,  p:2,w:2,d:0,l:0,g:4, pt:6},
+    {c:'ma', n:'Morocco',  fifa:13, p:2,w:1,d:0,l:1,g:0, pt:3},
+    {c:'be', n:'Belgium',  fifa:3,  p:2,w:1,d:0,l:1,g:-1,pt:3},
+    {c:'ge', n:'Georgia',  fifa:74, p:2,w:0,d:0,l:2,g:-3,pt:0},
+  ]},
+  D:{ r:'Round 2', t:[
+    {c:'br', n:'Brazil',   fifa:5,  p:2,w:1,d:1,l:0,g:2, pt:4},
+    {c:'co', n:'Colombia', fifa:11, p:2,w:1,d:1,l:0,g:1, pt:4},
+    {c:'ec', n:'Ecuador',  fifa:32, p:2,w:0,d:1,l:1,g:-1,pt:1},
+    {c:'py', n:'Paraguay', fifa:65, p:2,w:0,d:1,l:1,g:-2,pt:1},
+  ]},
+  E:{ r:'Round 2', t:[
+    {c:'es', n:'Spain',    fifa:8,  p:2,w:2,d:0,l:0,g:6, pt:6},
+    {c:'pt', n:'Portugal', fifa:6,  p:2,w:1,d:0,l:1,g:2, pt:3},
+    {c:'tr', n:'Turkey',   fifa:37, p:2,w:1,d:0,l:1,g:-2,pt:3},
+    {c:'al', n:'Albania',  fifa:67, p:2,w:0,d:0,l:2,g:-6,pt:0},
+  ]},
+  F:{ r:'Round 2', t:[
+    {c:'gb-eng', n:'England',     fifa:4,  p:2,w:1,d:1,l:0,g:2, pt:4},
+    {c:'nl',     n:'Netherlands', fifa:7,  p:2,w:1,d:1,l:0,g:1, pt:4},
+    {c:'ua',     n:'Ukraine',     fifa:23, p:2,w:0,d:1,l:1,g:-1,pt:1},
+    {c:'pl',     n:'Poland',      fifa:20, p:2,w:0,d:1,l:1,g:-2,pt:1},
+  ]},
+  G:{ r:'Round 2', t:[
+    {c:'de', n:'Germany',     fifa:16, p:2,w:2,d:0,l:0,g:4, pt:6},
+    {c:'at', n:'Austria',     fifa:26, p:2,w:1,d:0,l:1,g:0, pt:3},
+    {c:'ch', n:'Switzerland', fifa:19, p:2,w:0,d:1,l:1,g:-1,pt:1},
+    {c:'hr', n:'Croatia',     fifa:10, p:2,w:0,d:1,l:1,g:-3,pt:1},
+  ]},
+  H:{ r:'Round 2', t:[
+    {c:'jp', n:'Japan',       fifa:18, p:2,w:2,d:0,l:0,g:3, pt:6},
+    {c:'kr', n:'South Korea', fifa:23, p:2,w:1,d:0,l:1,g:1, pt:3},
+    {c:'au', n:'Australia',   fifa:25, p:2,w:1,d:0,l:1,g:-1,pt:3},
+    {c:'ir', n:'Iran',        fifa:21, p:2,w:0,d:0,l:2,g:-3,pt:0},
+  ]},
+  I:{ r:'Round 2', t:[
+    {c:'it', n:'Italy',    fifa:9,  p:2,w:1,d:1,l:0,g:2, pt:4},
+    {c:'hr', n:'Croatia',  fifa:10, p:2,w:1,d:1,l:0,g:1, pt:4},
+    {c:'ro', n:'Romania',  fifa:46, p:2,w:0,d:1,l:1,g:-1,pt:1},
+    {c:'al', n:'Albania',  fifa:67, p:2,w:0,d:1,l:1,g:-2,pt:1},
+  ]},
+  J:{ r:'Round 2', t:[
+    {c:'sn', n:'Senegal',  fifa:20, p:2,w:2,d:0,l:0,g:3, pt:6},
+    {c:'ng', n:'Nigeria',  fifa:40, p:2,w:1,d:0,l:1,g:0, pt:3},
+    {c:'dz', n:'Algeria',  fifa:35, p:2,w:0,d:1,l:1,g:-1,pt:1},
+    {c:'tn', n:'Tunisia',  fifa:27, p:2,w:0,d:1,l:1,g:-2,pt:1},
+  ]},
+  K:{ r:'Round 2', t:[
+    {c:'mx', n:'Mexico',    fifa:15, p:2,w:1,d:1,l:0,g:2, pt:4},
+    {c:'pe', n:'Peru',      fifa:68, p:2,w:1,d:0,l:1,g:-1,pt:3},
+    {c:'uy', n:'Uruguay',   fifa:17, p:2,w:1,d:0,l:1,g:0, pt:3},
+    {c:'ve', n:'Venezuela', fifa:51, p:2,w:0,d:1,l:1,g:-1,pt:1},
+  ]},
+  L:{ r:'Round 2', t:[
+    {c:'sa', n:'Saudi Arabia', fifa:58,  p:2,w:1,d:1,l:0,g:2, pt:4},
+    {c:'eg', n:'Egypt',        fifa:39,  p:2,w:1,d:1,l:0,g:1, pt:4},
+    {c:'iq', n:'Iraq',         fifa:63,  p:2,w:0,d:1,l:1,g:-1,pt:1},
+    {c:'kw', n:'Kuwait',       fifa:152, p:2,w:0,d:1,l:1,g:-2,pt:1},
+  ]},
+};
+
+// ─── KNOCKOUT DATA ────────────────────────────────
+const KO_ROUNDS = [
+  {
+    id:'R32', label:'R32', name:'Round of 32', dates:'Jun 28 – Jul 3',
+    matches:[
+      {h:{c:'ar',n:'Argentina',fifa:1},   a:{c:'sn',n:'Senegal',fifa:20},  hs:2, as:0, status:'ft'},
+      {h:{c:'fr',n:'France',fifa:2},      a:{c:'jp',n:'Japan',fifa:18},    hs:1, as:1, status:'ft', pen:'4-2', hwin:true},
+      {h:{c:'es',n:'Spain',fifa:8},       a:{c:'kr',n:'S. Korea',fifa:23}, hs:3, as:0, status:'ft'},
+      {h:{c:'gb-eng',n:'England',fifa:4}, a:{c:'ma',n:'Morocco',fifa:13},  status:'live', min:"67'", hs:1, as:0},
+      {h:{c:'br',n:'Brazil',fifa:5},      a:{c:'mx',n:'Mexico',fifa:15},   status:'upcoming', date:'Jun 29', time:'22:00'},
+      {h:{c:'de',n:'Germany',fifa:16},    a:{c:'uy',n:'Uruguay',fifa:17},  status:'upcoming', date:'Jun 30', time:'19:00'},
+    ]
+  },
+  {
+    id:'R16', label:'R16', name:'Round of 16', dates:'Jul 4 – Jul 7',
+    matches:[
+      {h:{c:'ar',n:'Argentina',fifa:1},   a:{c:'es',n:'Spain',fifa:8},    status:'upcoming', date:'Jul 4', time:'20:00'},
+      {h:{c:'fr',n:'France',fifa:2},      a:{c:'br',n:'Brazil',fifa:5},   status:'upcoming', date:'Jul 5', time:'20:00'},
+    ]
+  },
+  {
+    id:'QF', label:'QF', name:'Quarter-finals', dates:'Jul 8 – Jul 10',
+    matches:[
+      {h:{c:'ar',n:'TBD',fifa:null}, a:{c:'de',n:'TBD',fifa:null}, status:'upcoming', date:'Jul 8', time:'TBD'},
+      {h:{c:'gb-eng',n:'TBD',fifa:null}, a:{c:'fr',n:'TBD',fifa:null}, status:'upcoming', date:'Jul 9', time:'TBD'},
+    ]
+  },
+  {
+    id:'SF', label:'SF', name:'Semi-finals', dates:'Jul 14 – Jul 15',
+    matches:[
+      {h:{c:'br',n:'TBD',fifa:null}, a:{c:'ar',n:'TBD',fifa:null}, status:'upcoming', date:'Jul 14', time:'TBD'},
+    ]
+  },
+  {
+    id:'Final', label:'Final', name:'Final', dates:'Jul 19',
+    matches:[
+      {h:{c:'gb-eng',n:'TBD',fifa:null}, a:{c:'fr',n:'TBD',fifa:null}, status:'upcoming', date:'Jul 19', time:'20:00'},
+    ]
+  },
+];
+
+// ─── TODAY'S MATCHES DATA ─────────────────────────
+const TODAY_CARDS = [
+  {status:'live', min:"74'", grp:'Group A', hc:'us', hn:'USA', ac:'pa', an:'Panama', hs:2, as:1, date:'Jun17'},
+  {status:'ft',            grp:'Group B', hc:'ar', hn:'Argentina', ac:'ca', an:'Canada', hs:3, as:0, date:'Jun13'},
+  {status:'soon', time:'21:00', grp:'Group C', hc:'fr', hn:'France', ac:'ma', an:'Morocco', date:'Jun17'},
+  {status:'live', min:"32'", grp:'Group D', hc:'br', hn:'Brazil', ac:'co', an:'Colombia', hs:1, as:1, date:'Jun17'},
+  {status:'ft',            grp:'Group E', hc:'es', hn:'Spain', ac:'al', an:'Albania', hs:2, as:0, date:'Jun14'},
+];
+
+// ─── CROSS-TAB NAVIGATION ────────────────────────
+function goTeam(code){
+  sessionStorage.setItem('tab3_team', code);
+  window.location.href = 'tab3.html';
+}
+function goSchedule(date){
+  sessionStorage.setItem('tab2_date', date);
+  window.location.href = 'tab2.html';
+}
+
+// ─── HELPERS ──────────────────────────────────────
+function rankBar(rank) {
+  const w = Math.max(4, Math.round(36 * (1 - (rank-1)/199)));
+  let h, color;
+  if      (rank <= 15) { h=4;   color='#007AFF'; }
+  else if (rank <= 40) { h=3;   color='#34C759'; }
+  else if (rank <= 80) { h=2.5; color='#FF9500'; }
+  else                 { h=2;   color='#8E8E93'; }
+  return `<div class="rank-bar" style="width:${w}px;height:${h}px;background:${color};border-radius:${h}px"></div>`;
+}
+
+// ─── STAGE MENU ───────────────────────────────────
+function toggleMenu() {
+  document.getElementById('stageMenu').classList.toggle('open');
+  document.addEventListener('click', outsideClose, {once:true});
+}
+function outsideClose(e) {
+  if (!e.target.closest('.stage-btn') && !e.target.closest('.stage-menu')) {
+    document.getElementById('stageMenu').classList.remove('open');
+  }
+}
+function setStage(stage) {
+  currentStage = stage;
+  document.getElementById('stageMenu').classList.remove('open');
+  document.getElementById('stageBtnLabel').textContent =
+    stage === 'group' ? 'Group Stage' : 'Knockout Stage';
+  // Update checkmarks
+  document.getElementById('opt-group').classList.toggle('active-opt', stage==='group');
+  document.getElementById('opt-group').querySelector('.stage-opt-check').style.display = stage==='group'?'':'none';
+  document.getElementById('opt-knockout').classList.toggle('active-opt', stage==='knockout');
+  document.getElementById('opt-knockout').querySelector('.stage-opt-check').style.display = stage==='knockout'?'':'none';
+  renderAll();
+}
+
+// ─── TODAY'S MATCHES ──────────────────────────────
+function buildToday() {
+  const wrap = document.getElementById('todayWrap');
+  if (!hasTodayMatches) { wrap.style.display='none'; return; }
+  wrap.style.display='';
+  const scroll = document.getElementById('todayScroll');
+  scroll.innerHTML = TODAY_CARDS.map(m => {
+    let statusHtml, centerHtml;
+    if (m.status==='live') {
+      statusHtml = `<div class="mc-status live"><div class="live-dot"></div>${m.min}</div>`;
+      centerHtml = `<div class="mc-scores"><span class="mc-score">${m.hs}</span><span class="mc-sep">:</span><span class="mc-score">${m.as}</span></div>`;
+    } else if (m.status==='ft') {
+      statusHtml = `<div class="mc-status ft">Full Time</div>`;
+      centerHtml = `<div class="mc-scores"><span class="mc-score">${m.hs}</span><span class="mc-sep">:</span><span class="mc-score">${m.as}</span></div>`;
+    } else {
+      statusHtml = `<div class="mc-status soon">${m.time}</div>`;
+      centerHtml = `<span class="mc-vs">vs</span>`;
+    }
+    return `
+    <div class="match-card" onclick="goSchedule('${m.date}')">
+      <div class="mc-top">
+        <div style="flex:1;display:flex;justify-content:center;">${statusHtml}</div>
+        <div style="flex-shrink:0;min-width:50px;"></div>
+        <div style="flex:1;display:flex;justify-content:center;"><div class="mc-grp">${m.grp}</div></div>
+      </div>
+      <div class="mc-teams">
+        <div class="mc-team">
+          <div class="mc-badge-wrap"><img class="mc-badge-img" src="https://flagcdn.com/w80/${m.hc}.png" alt="${m.hn}" loading="lazy"></div>
+          <span class="mc-name">${m.hn}</span>
+        </div>
+        <div class="mc-score-col">${centerHtml}</div>
+        <div class="mc-team">
+          <div class="mc-badge-wrap"><img class="mc-badge-img" src="https://flagcdn.com/w80/${m.ac}.png" alt="${m.an}" loading="lazy"></div>
+          <span class="mc-name">${m.an}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── SELECTOR CHIPS ───────────────────────────────
+function buildChips() {
+  const scroll = document.getElementById('selScroll');
+  scroll.innerHTML = '';
+  if (currentStage === 'group') {
+    Object.keys(GROUPS).forEach((key, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'sel-chip' + (i===0?' active':'');
+      chip.dataset.key = key;
+      chip.textContent = 'Group ' + key;
+      chip.onclick = () => goAnchor(key, chip, 'group-');
+      scroll.appendChild(chip);
+    });
+  } else {
+    KO_ROUNDS.forEach((r, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'sel-chip ko' + (i===0?' active':'');
+      chip.dataset.key = r.id;
+      chip.textContent = r.label;
+      chip.onclick = () => goAnchor(r.id, chip, 'ko-');
+      scroll.appendChild(chip);
+    });
+  }
+}
+
+// ─── ANCHOR SCROLL ────────────────────────────────
+function scrollChipCenter(el) {
+  const sc = document.getElementById('selScroll');
+  sc.scrollTo({ left: el.offsetLeft - sc.offsetWidth/2 + el.offsetWidth/2, behavior:'smooth' });
+}
+function goAnchor(key, el, prefix) {
+  document.querySelectorAll('.sel-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  scrollChipCenter(el);
+  const sec = document.getElementById(prefix + key);
+  if (!sec) return;
+  const ms = document.getElementById('mainScroll');
+  ms.scrollTo({top: sec.getBoundingClientRect().top - ms.getBoundingClientRect().top + ms.scrollTop - 6, behavior:'smooth'});
+}
+
+// ─── BUILD GROUP STAGE ────────────────────────────
+function buildGroups() {
+  const container = document.getElementById('mainContent');
+  container.innerHTML = '';
+  const keys = Object.keys(GROUPS);
+  keys.forEach((key, gi) => {
+    const g = GROUPS[key];
+    const sec = document.createElement('div');
+    sec.className = 'group-section'; sec.id = 'group-' + key;
+    let rows = '';
+    g.t.forEach((t, i) => {
+      const gd = t.g > 0 ? '+'+t.g : String(t.g);
+      const gdCls = t.g > 0 ? 'pos' : t.g < 0 ? 'neg' : '';
+      rows += `
+        <div class="team-row" onclick="goTeam('${t.c}')">
+          ${i<2?'<div class="qbar q"></div>':''}
+          <div class="t-pos">${i+1}</div>
+          <img class="t-flag" src="https://flagcdn.com/w40/${t.c}.png" alt="" loading="lazy">
+          <div class="t-name-col">
+            <span class="t-name">${t.n}</span>
+            <div class="rank-bar-wrap">${rankBar(t.fifa)}</div>
+          </div>
+          <div class="cv rank">#${t.fifa}</div>
+          <div class="cv stat">${t.p}</div>
+          <div class="cv stat">${t.w}</div>
+          <div class="cv stat">${t.d}</div>
+          <div class="cv stat">${t.l}</div>
+          <div class="cv gd ${gdCls}">${gd}</div>
+          <div class="cv pts">${t.pt}</div>
+          <svg class="row-chev" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#3C3C43" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>`;
+    });
+    sec.innerHTML = `
+      <div class="gsec-hd">
+        <span class="gsec-title">Group ${key}</span>
+        <span class="gsec-sub">${g.r}</span>
+      </div>
+      <div class="table-wrap">
+        <div class="col-hd-row">
+          <div class="ph-pos"></div><div class="ph-flag"></div>
+          <div class="ch-team">Team</div>
+          <div class="ch rank">RK</div>
+          <div class="ch stat">P</div><div class="ch stat">W</div>
+          <div class="ch stat">D</div><div class="ch stat">L</div>
+          <div class="ch gd">GD</div><div class="ch pts">Pts</div>
+          <div class="ch chev-ph"></div>
+        </div>
+        ${rows}
+      </div>
+      <div class="group-legend">
+        <div class="leg-item"><div class="leg-bar" style="background:#34C759"></div><span class="leg-text">Qualify</span></div>
+      </div>
+      ${gi<keys.length-1?'<div class="sec-div"></div>':''}`;
+    container.appendChild(sec);
+  });
+  setupGroupObserver();
+}
+
+// ─── BUILD KNOCKOUT STAGE ─────────────────────────
+function buildKnockout() {
+  const container = document.getElementById('mainContent');
+  container.innerHTML = '';
+  KO_ROUNDS.forEach((round, ri) => {
+    const sec = document.createElement('div');
+    sec.className = 'ko-section'; sec.id = 'ko-' + round.id;
+    const matches = round.matches.map(m => buildKoMatch(m, round.name)).join('');
+    sec.innerHTML = `
+      <div class="ko-hd">
+        <span class="ko-title">${round.name}</span>
+        <span class="ko-date-lbl">${round.dates}</span>
+      </div>
+      ${matches}
+      ${ri<KO_ROUNDS.length-1?'<div class="sec-div"></div>':''}`;
+    container.appendChild(sec);
+  });
+  setupKoObserver();
+}
+
+function buildKoMatch(m, roundName) {
+  const isLive=m.status==='live', isFt=m.status==='ft', isUp=m.status==='upcoming';
+
+  // Status badge
+  let statusHtml;
+  if(isLive) statusHtml=`<div class="koc-status live"><div class="live-dot"></div>${m.min}</div>`;
+  else if(isFt) statusHtml=`<div class="koc-status ft">Full Time</div>`;
+  else statusHtml=`<div class="koc-status soon">${m.date||''} ${m.time||'TBD'}</div>`;
+
+  // Determine winner
+  const hWin=isFt&&(m.hs>m.as||m.hwin);
+  const aWin=isFt&&(m.as>m.hs||(!m.hwin&&m.pen));
+
+  // Team block builder
+  function teamBlk(t, isWin, isLos) {
+    const cls=isWin?'won':isLos?'lost':'';
+    const rankStr=t.fifa?`#${t.fifa}`:(t.ctx||'');
+    const clickable=t.n!=='TBD';
+    return `<div class="koc-team ${cls}"${clickable?` onclick="goTeam('${t.c}')" style="cursor:pointer"`:''}>
+      <img class="koc-flag" src="https://flagcdn.com/w40/${t.c}.png" alt="${t.n}" loading="lazy">
+      <span class="koc-tname">${t.n}</span>
+      <span class="koc-rank">${rankStr}</span>
+    </div>`;
+  }
+
+  // Center column
+  let midHtml;
+  if(isUp){
+    midHtml=`<div class="koc-mid">
+      <div class="koc-time-big">${m.time||'TBD'}</div>
+      ${m.date?`<div class="koc-time-date">${m.date}</div>`:''}
+    </div>`;
+  } else if(isLive){
+    midHtml=`<div class="koc-mid">
+      <div class="koc-score-row">
+        <span class="koc-sn">${m.hs}</span>
+        <span class="koc-ssep">:</span>
+        <span class="koc-sn">${m.as}</span>
+      </div>
+      <div class="koc-min">${m.min}</div>
+    </div>`;
+  } else {
+    // Full time: bold winner score, dim loser score
+    midHtml=`<div class="koc-mid">
+      <div class="koc-score-row">
+        <span class="koc-sn ${!hWin&&aWin?'dim':''}">${m.hs}</span>
+        <span class="koc-ssep">:</span>
+        <span class="koc-sn ${!aWin&&hWin?'dim':''}">${m.as}</span>
+      </div>
+    </div>`;
+  }
+
+  // Penalty note
+  const penHtml=m.pen?`<div class="koc-pen">
+    <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+      <circle cx="6" cy="6" r="5" stroke="var(--label3)" stroke-width="1"/>
+      <path d="M6 4v2.5l1.5 1" stroke="var(--label3)" stroke-width="1" stroke-linecap="round"/>
+    </svg>
+    Won on penalties · ${m.pen}</div>`:'';
+
+  return `<div class="koc">
+    <div class="koc-head">
+      <span class="koc-stage">${roundName}</span>
+      ${statusHtml}
+    </div>
+    <div class="koc-teams">
+      ${teamBlk(m.h, hWin, aWin&&!hWin)}
+      ${midHtml}
+      ${teamBlk(m.a, aWin, hWin&&!aWin)}
+    </div>
+    ${penHtml}
+  </div>`;
+}
+
+// ─── OBSERVERS ────────────────────────────────────
+function setupGroupObserver() {
+  const ms = document.getElementById('mainScroll');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const key = e.target.id.replace('group-','');
+        document.querySelectorAll('.sel-chip').forEach(c=>c.classList.remove('active'));
+        const chip = document.querySelector(`[data-key="${key}"]`);
+        if (chip) { chip.classList.add('active'); scrollChipCenter(chip); }
+      }
+    });
+  }, {root:ms, rootMargin:'-35% 0px -55% 0px', threshold:0});
+  document.querySelectorAll('.group-section').forEach(s=>obs.observe(s));
+}
+function setupKoObserver() {
+  const ms = document.getElementById('mainScroll');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const key = e.target.id.replace('ko-','');
+        document.querySelectorAll('.sel-chip').forEach(c=>c.classList.remove('active'));
+        const chip = document.querySelector(`[data-key="${key}"]`);
+        if (chip) { chip.classList.add('active'); scrollChipCenter(chip); }
+      }
+    });
+  }, {root:ms, rootMargin:'-35% 0px -55% 0px', threshold:0});
+  document.querySelectorAll('.ko-section').forEach(s=>obs.observe(s));
+}
+
+// ─── RENDER ALL ───────────────────────────────────
+function renderAll() {
+  buildChips();
+  if (currentStage==='group') buildGroups();
+  else buildKnockout();
+}
+
+// ─── INIT ─────────────────────────────────────────
+buildToday();
+// Set initial stage btn label
+document.getElementById('stageBtnLabel').textContent =
+  currentStage==='group' ? 'Group Stage' : 'Knockout Stage';
+if (currentStage==='knockout') {
+  document.getElementById('opt-group').classList.remove('active-opt');
+  document.getElementById('opt-group').querySelector('.stage-opt-check').style.display='none';
+  document.getElementById('opt-knockout').classList.add('active-opt');
+  document.getElementById('opt-knockout').querySelector('.stage-opt-check').style.display='';
+}
+renderAll();
+</script>
+
+</body>
+</html>

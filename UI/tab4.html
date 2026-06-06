@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en" style="height:100%;height:-webkit-fill-available" style="height:100%;height:-webkit-fill-available">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover,user-scalable=no">
+<title>FIFA World Cup 2026 · Players</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F2F2F7;--surface:#fff;--s2:#F2F2F7;--s3:rgba(120,120,128,.12);
+  --label:#000;--l2:rgba(60,60,67,.6);--l3:rgba(60,60,67,.3);--sep:rgba(60,60,67,.12);
+  --blue:#007AFF;--green:#34C759;--red:#FF3B30;--orange:#FF9500;--gray:#8E8E93;
+  --gold:#FFD700;
+  --font:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;
+}
+body{background:var(--bg);font-family:var(--font);display:flex;flex-direction:column;height:100vh;height:-webkit-fill-available;overflow:hidden;padding:0;margin:0;padding-top:env(safe-area-inset-top);}
+
+/* ── STATUS BAR ── */
+/* ── NAV BAR ── */
+.nav-bar{height:44px;padding:0 16px;display:flex;align-items:center;
+  background:var(--surface);border-bottom:.5px solid var(--sep);flex-shrink:0}
+.nav-title{font-size:17px;font-weight:600;color:var(--label);letter-spacing:-.4px}
+
+/* ── SEARCH ── */
+.search-wrap{padding:8px 14px;background:var(--surface);
+  border-bottom:.5px solid var(--sep);flex-shrink:0}
+.search-field{display:flex;align-items:center;gap:8px;
+  background:var(--s3);border-radius:10px;padding:7px 10px}
+.search-field input{border:none;background:transparent;outline:none;
+  font-size:15px;color:var(--label);font-family:var(--font);flex:1;
+  caret-color:var(--blue)}
+.search-field input::placeholder{color:var(--l3)}
+
+/* ── SORT — segmented control (full width, Tab-3 style) ── */
+.sort-bar{padding:8px 14px;background:var(--surface);
+  border-bottom:.5px solid var(--sep);flex-shrink:0}
+.seg-ctrl{display:flex;background:var(--s3);border-radius:9px;padding:2px;gap:2px}
+.seg-btn{flex:1;padding:6px 0;border-radius:7px;font-size:13px;font-weight:500;
+  color:var(--l2);text-align:center;cursor:pointer;
+  transition:all .2s cubic-bezier(.34,1.4,.64,1);white-space:nowrap}
+.seg-btn:active{transform:scale(.94)}
+.seg-btn.on{background:var(--surface);color:var(--label);font-weight:600;
+  box-shadow:0 1px 3px rgba(0,0,0,.13)}
+
+/* ── POSITION SUB-FILTER — equal-width full-row ── */
+.pos-filter{display:none;gap:6px;padding:8px 14px;background:var(--surface);
+  border-bottom:.5px solid var(--sep);
+  animation:slideDown .22s cubic-bezier(.34,1.3,.64,1)}
+.pos-filter.show{display:flex}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.pos-chip{
+  flex:1;  /* ← each chip shares width equally */
+  padding:6px 0;border-radius:20px;background:var(--s3);
+  font-size:13px;font-weight:500;color:var(--l2);
+  text-align:center;cursor:pointer;
+  transition:all .2s cubic-bezier(.34,1.56,.64,1)}
+.pos-chip:active{transform:scale(.93)}
+.pos-chip.on{background:var(--blue);color:#fff;font-weight:600}
+
+/* ── SCROLL ── */
+.scroll-area{min-height:0;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.scroll-area::-webkit-scrollbar{display:none}
+
+/* ── SECTION HEADER ── */
+.sec-hd{padding:6px 16px 4px;font-size:12px;font-weight:600;
+  color:var(--l3);letter-spacing:.04em;text-transform:uppercase;
+  background:var(--bg);position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;gap:6px}
+
+/* ── PLAYER ROW ── */
+/* grid: [rank 26] [avatar 38] [info flex] [pos 28] [ovr 32] [chev 16] */
+.pr{
+  display:grid;
+  grid-template-columns:26px 38px 1fr 30px 32px 16px;
+  column-gap:8px;align-items:center;
+  padding:9px 12px 9px 10px;
+  background:var(--surface);border-bottom:.5px solid var(--sep);
+  cursor:pointer;transition:background .1s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.pr:active{background:var(--s2)}
+.pr-rank{font-size:12px;font-weight:500;color:var(--l3);text-align:center}
+.pr-av{width:36px;height:36px;border-radius:50%;background:var(--s3);
+  overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.pr-info{min-width:0}
+.pr-name{font-size:14px;font-weight:500;color:var(--label);
+  letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-country-row{display:flex;align-items:center;gap:4px;margin-top:2px}
+.pr-cflag{width:14px;height:10px;border-radius:1.5px;object-fit:cover;
+  border:.5px solid rgba(0,0,0,.07);flex-shrink:0}
+.pr-cname{font-size:11px;color:var(--l3);white-space:nowrap}
+/* pos badge */
+.pr-pos{font-size:10px;font-weight:700;padding:2px 4px;border-radius:4px;text-align:center}
+.pos-gk{background:rgba(255,149,0,.15);color:#CC7A00}
+.pos-df{background:rgba(52,199,89,.12);color:#1A7A38}
+.pos-mf{background:rgba(0,122,255,.12);color:#005EC4}
+.pos-fw{background:rgba(255,59,48,.1);color:#CC2020}
+/* ovr */
+.pr-ovr{font-size:14px;font-weight:700;text-align:right}
+.pr-chev{opacity:.2}
+
+/* ── DETAIL PAGE ── */
+.detail-page{position:fixed;inset:0;background:var(--bg);
+  overflow:hidden;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .38s cubic-bezier(.34,1.1,.64,1);z-index:150}
+.detail-page.open{transform:translateX(0)}
+.d-status{display:none}
+.d-nav{height:44px;align-items:center;padding:0 16px;display:flex;align-items:center;
+  justify-content:space-between;background:rgba(255,255,255,.92);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  border-bottom:.5px solid var(--sep);flex-shrink:0}
+.d-back{display:flex;align-items:center;gap:4px;color:var(--blue);
+  font-size:15px;font-weight:500;cursor:pointer}
+.d-back:active{opacity:.6}
+.d-nav-title{font-size:15px;font-weight:600;color:var(--label);letter-spacing:-.3px}
+.d-share-btn{color:var(--blue);cursor:pointer;padding:4px;display:flex;align-items:center}
+.d-share-btn:active{opacity:.6}
+
+.d-scroll{min-height:0;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.d-scroll::-webkit-scrollbar{display:none}
+
+/* ── HERO ── */
+/* ── HERO: two-zone layout ─────────────────────
+   Zone A (cream): centered avatar + name
+   Zone B (dark navy): flag/country · age · pos · OVR+stars
+   ─────────────────────────────────────────── */
+.d-hero{border-bottom:.5px solid var(--sep)}
+
+/* Zone A — cream background */
+.d-hero-a{
+  background:#F5EFE8;  /* default; overridden in JS with team secondary */
+  padding:28px 20px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.d-big-av{
+  width:96px;height:96px;border-radius:50%;
+  background:#E8DDD0;overflow:hidden;
+  display:flex;align-items:flex-end;justify-content:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.15),0 0 0 3px rgba(255,255,255,.8);
+}
+.d-full-name{
+  font-size:26px;font-weight:700;color:#1A1A1A;
+  letter-spacing:-.6px;text-align:center;line-height:1.15;
+}
+
+/* Zone B — dark navy, 4-column grid
+   [flag+name 1fr] [age tile 56px] [pos tile 56px] [ovr+stars 1fr]
+   All cells share the same height via align-items:stretch */
+.d-hero-b{
+  /* background set dynamically per team */
+  padding:14px 14px 16px;
+  display:grid;
+  grid-template-columns:1fr 56px 56px 1fr;
+  gap:8px;
+  align-items:stretch;  /* all 4 cells grow to the tallest */
+}
+/* Country cell */
+.d-cntry-col{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+}
+.d-big-flag{
+  width:58px;height:40px;border-radius:6px;object-fit:cover;
+  border:.5px solid rgba(255,255,255,.15);display:block;
+}
+.d-cntry-name{
+  font-size:11px;font-weight:500;color:rgba(255,255,255,.65);
+  white-space:nowrap;text-align:center;
+}
+/* Age tile */
+.d-dark-tile{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;
+  background:rgba(255,255,255,.1);border-radius:10px;
+  padding:10px 4px;
+}
+.d-dt-lbl{
+  font-size:9px;font-weight:600;color:rgba(255,255,255,.4);
+  text-transform:uppercase;letter-spacing:.07em;line-height:1;
+}
+.d-dt-val{
+  font-size:20px;font-weight:700;color:#fff;letter-spacing:-.5px;line-height:1;
+}
+/* Position tile: icon on top, badge below */
+.d-pos-icon{
+  /* EA-style field/position icon using SVG */
+  display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,.45);line-height:1;margin-bottom:2px;
+}
+/* Position badge pill (same pos colors as list) */
+.d-pos-badge-dark{
+  font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px;
+  color:#fff;letter-spacing:.02em;
+}
+.pb-gk{background:#CC7A00}
+.pb-df{background:#1A7A38}
+.pb-mf{background:#005EC4}
+.pb-fw{background:#CC2020}
+/* OVR cell */
+.d-ovr-col{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+}
+.d-ovr-num{
+  font-size:40px;font-weight:800;line-height:1;letter-spacing:-1.5px;
+}
+.d-stars{display:flex;align-items:center;gap:2px}
+.d-star-svg{flex-shrink:0}
+.d-ovr-tier{
+  font-size:10px;font-weight:500;color:rgba(255,255,255,.5);
+  margin-top:1px;text-align:center;
+}
+/* compat stubs */
+.d-dark-tiles{display:contents}
+/* unused leftovers kept for JS compat */
+.d-hinfo,.d-name-row,.d-age-tag,.d-nat-row,.d-nat-left,.d-nat-flag,.d-nat-name,.d-pos-tag,.d-ovr-card,.d-ovr-mid,.d-ovr-lbl{display:none}
+
+/* ── RADAR ── */
+.d-sec{background:var(--surface);margin-top:10px;padding:14px 16px;
+  border-top:.5px solid var(--sep);border-bottom:.5px solid var(--sep)}
+.d-sec-title{font-size:12px;font-weight:600;color:var(--l3);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
+.radar-wrap{display:flex;justify-content:center}
+
+/* ── PHYSICAL GRID ── */
+.d-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.d-tile{display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:var(--s2);border-radius:10px;padding:10px 8px}
+.d-tile-val{font-size:18px;font-weight:700;color:var(--label);letter-spacing:-.3px}
+.d-tile-lbl{font-size:9.5px;font-weight:500;color:var(--l3);
+  text-transform:uppercase;letter-spacing:.04em;text-align:center}
+
+/* ── CLUB CARD ── */
+.d-club-row{display:flex;align-items:center;gap:12px}
+/* Shield badge */
+.club-shield{width:44px;height:50px;flex-shrink:0}
+.d-club-name{font-size:15px;font-weight:600;color:var(--label);letter-spacing:-.2px}
+.d-club-sub{display:flex;align-items:center;gap:5px;margin-top:2px}
+.d-club-cflag{width:16px;height:11px;border-radius:2px;object-fit:cover;
+  border:.5px solid rgba(0,0,0,.08)}
+.d-club-ctxt{font-size:12px;color:var(--l3)}
+.d-val-col{display:flex;flex-direction:column;align-items:flex-end;gap:1px;margin-left:auto}
+.d-val-num{font-size:17px;font-weight:700;color:var(--label);letter-spacing:-.3px}
+.d-val-lbl{font-size:9.5px;font-weight:500;color:var(--l3);
+  text-transform:uppercase;letter-spacing:.04em}
+
+/* ── WC STATS ── */
+/* 3-column stats grid */
+.d-stat3-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.d-stat2-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.d-st-tile{display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:var(--s2);border-radius:12px;padding:12px 8px}
+/* Plain value (Caps) */
+.d-st-val{font-size:22px;font-weight:700;color:var(--label);letter-spacing:-.3px}
+/* Compound value: WC (blue bold) + career (gray) */
+.d-st-compound{display:flex;align-items:baseline;gap:2px;flex-wrap:wrap;
+  justify-content:center}
+.st-wc{font-size:22px;font-weight:800;color:var(--blue);letter-spacing:-.5px;line-height:1}
+.st-career{font-size:13px;font-weight:500;color:var(--l3);line-height:1}
+.st-career-only{font-size:22px;font-weight:700;color:var(--label);letter-spacing:-.3px;line-height:1}
+.d-st-lbl{font-size:9px;font-weight:500;color:var(--l3);
+  text-transform:uppercase;letter-spacing:.05em;text-align:center}
+/* Legend row */
+.d-st-legend{font-size:10.5px;color:var(--l3);text-align:center;
+  padding:6px 0 0;letter-spacing:.01em}
+.d-st-leg-wc{color:var(--blue);font-weight:700}
+.d-st-leg-career{color:var(--l3);font-weight:600}
+
+/* ── SHARE MODAL ── */
+.share-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);
+  border-radius:54px;z-index:400;align-items:center;justify-content:center;padding:0 24px}
+.share-overlay.open{display:flex;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.share-modal{background:var(--surface);border-radius:18px;width:100%;overflow:hidden;
+  animation:popIn .24s cubic-bezier(.34,1.3,.64,1)}
+@keyframes popIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+.share-title{font-size:13px;font-weight:600;color:var(--l2);
+  padding:14px 16px 10px;text-transform:uppercase;letter-spacing:.04em}
+.share-match-lbl{font-size:14px;font-weight:600;color:var(--label);
+  padding:0 16px 12px;letter-spacing:-.2px}
+.share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0 8px 16px}
+.share-opt{display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:10px 4px;cursor:pointer;border-radius:12px;transition:background .12s ease}
+.share-opt:active,.share-opt:hover{background:var(--s2)}
+.share-icon{width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center}
+.share-lbl{font-size:10.5px;font-weight:500;color:var(--l2);text-align:center;white-space:nowrap}
+.share-cancel{display:flex;align-items:center;justify-content:center;
+  padding:14px;border-top:.5px solid var(--sep);cursor:pointer;
+  font-size:15px;font-weight:500;color:var(--blue)}
+.share-cancel:active{opacity:.6}
+
+/* ── TOAST ── */
+.toast{position:absolute;bottom:100px;left:50%;
+  transform:translateX(-50%) translateY(8px);
+  background:rgba(0,0,0,.76);color:#fff;font-size:12px;font-weight:500;
+  padding:7px 14px;border-radius:20px;white-space:nowrap;opacity:0;z-index:600;
+  transition:opacity .2s ease,transform .2s cubic-bezier(.34,1.4,.64,1);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── TAB BAR ── */
+.tab-bar{height:calc(49px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);
+  border-top:.5px solid var(--sep);display:flex;align-items:flex-start;
+  padding-top:8px;flex-shrink:0;flex-shrink:0;z-index:100}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;padding-top:2px;
+  transition:transform .18s cubic-bezier(.34,1.56,.64,1)}
+.tab-item:active{transform:scale(.85)}
+.tab-label{font-size:10px;font-weight:500}
+.tab-item.on .tab-label{color:var(--blue)}
+.tab-item:not(.on) .tab-label{color:var(--gray)}
+</style>
+</head>
+<body>
+
+<!-- Nav Bar (no compare button) -->
+<div class="nav-bar">
+  <span class="nav-title">Players</span>
+</div>
+
+<!-- Search -->
+<div class="search-wrap">
+  <div class="search-field">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+      <circle cx="6.5" cy="6.5" r="4.5" stroke="#8E8E93" stroke-width="1.4"/>
+      <path d="M10 10l3.5 3.5" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <input id="searchInput" type="text" placeholder="Search players" oninput="renderList()" autocomplete="off">
+  </div>
+</div>
+
+<!-- Sort: segmented control -->
+<div class="sort-bar">
+  <div class="seg-ctrl">
+    <div class="seg-btn on"  onclick="setSort('ovr',this)">Overall</div>
+    <div class="seg-btn"     onclick="setSort('pos',this)">Position</div>
+  </div>
+</div>
+<!-- Position sub-filter — visible when Position tab active -->
+<div class="pos-filter" id="posFilter">
+  <div class="pos-chip on" onclick="setPosFilter('all',this)">All</div>
+  <div class="pos-chip" onclick="setPosFilter('GK',this)">GK</div>
+  <div class="pos-chip" onclick="setPosFilter('DF',this)">DF</div>
+  <div class="pos-chip" onclick="setPosFilter('MF',this)">MF</div>
+  <div class="pos-chip" onclick="setPosFilter('FW',this)">FW</div>
+</div>
+
+<!-- Player List -->
+<div class="scroll-area"><div id="playerList"></div></div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <div class="tab-item" onclick="window.location.href='tab1.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h10" stroke="#8E8E93" stroke-width="2" stroke-linecap="round"/></svg>
+    <span class="tab-label">Standings</span>
+  </div>
+  <div class="tab-item" onclick="window.location.href='tab2.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="3" stroke="#8E8E93" stroke-width="1.8" fill="none"/><path d="M16 2v4M8 2v4M3 9h18" stroke="#8E8E93" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="14" r="1.2" fill="#8E8E93"/><circle cx="12" cy="14" r="1.2" fill="#8E8E93"/></svg>
+    <span class="tab-label">Schedule</span>
+  </div>
+  <div class="tab-item" onclick="window.location.href='tab3.html'">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7l-8-4z" stroke="#8E8E93" stroke-width="1.8" fill="none" stroke-linejoin="round"/></svg>
+    <span class="tab-label">Teams</span>
+  </div>
+  <div class="tab-item on">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#007AFF" stroke-width="1.8" fill="none"/><path d="M5 20c0-3.31 3.13-6 7-6s7 2.69 7 6" stroke="#007AFF" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>
+    <span class="tab-label">Players</span>
+  </div>
+</div>
+
+<!-- ── DETAIL PAGE ── -->
+<div class="detail-page" id="detailPage">
+  <div class="d-nav">
+    <div class="d-back" onclick="closeDetail()">
+      <svg width="9" height="15" viewBox="0 0 9 16" fill="none">
+        <path d="M8 1L1 8l7 7" stroke="#007AFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Players
+    </div>
+    <span class="d-nav-title" id="dNavTitle">—</span>
+    <div class="d-share-btn" onclick="openShare()">
+      <svg width="16" height="18" viewBox="0 0 18 20" fill="none">
+        <path d="M13 7l-4-4-4 4M9 3v10" stroke="#007AFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3 13v4a1 1 0 001 1h10a1 1 0 001-1v-4" stroke="#007AFF" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="d-scroll">
+
+    <!-- Hero -->
+    <div class="d-hero">
+      <!-- Zone A: cream — avatar + name -->
+      <div class="d-hero-a" id="dHeroA">
+        <div class="d-big-av" id="dBigAv"></div>
+        <div class="d-full-name" id="dFullName">—</div>
+      </div>
+
+      <!-- Zone B: dark navy — country · age · pos · OVR+stars -->
+      <div class="d-hero-b" id="dHeroB">
+        <!-- Col 1: Country flag + name -->
+        <div class="d-cntry-col">
+          <img class="d-big-flag" id="dBigFlag" src="" alt="">
+          <span class="d-cntry-name" id="dCntryName">—</span>
+        </div>
+        <!-- Col 2: Age tile -->
+        <div class="d-dark-tile">
+          <span class="d-dt-lbl">AGE</span>
+          <span class="d-dt-val" id="dAge">—</span>
+        </div>
+        <!-- Col 3: Position tile -->
+        <div class="d-dark-tile">
+          <div class="d-pos-icon">
+            <!-- field/position icon -->
+            <svg width="20" height="16" viewBox="0 0 20 16" fill="none">
+              <rect x="1" y="1" width="18" height="14" rx="2" stroke="rgba(255,255,255,.45)" stroke-width="1.2"/>
+              <circle cx="10" cy="8" r="2.5" stroke="rgba(255,255,255,.45)" stroke-width="1"/>
+              <path d="M1 8h3M16 8h3M10 1v3M10 12v3" stroke="rgba(255,255,255,.35)" stroke-width="1" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="d-pos-badge-dark" id="dPosBadge">—</span>
+        </div>
+        <!-- Col 4: OVR + Stars -->
+        <div class="d-ovr-col">
+          <div class="d-ovr-num" id="dOvrNum">—</div>
+          <div class="d-stars" id="dStars"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Radar -->
+    <div class="d-sec">
+      <div class="d-sec-title">Attributes</div>
+      <div class="radar-wrap">
+        <canvas id="radarCanvas" width="220" height="220" style="width:220px;height:220px"></canvas>
+      </div>
+    </div>
+
+    <!-- Club -->
+    <div class="d-sec">
+      <div class="d-sec-title">Club</div>
+      <div class="d-club-row">
+        <div id="dClubShield"></div>
+        <div class="d-club-name-col">
+          <div class="d-club-name" id="dClubName">—</div>
+          <div class="d-club-sub">
+            <img class="d-club-cflag" id="dClubFlag" src="" alt="">
+            <span class="d-club-ctxt" id="dClubLeague">—</span>
+          </div>
+        </div>
+        <div class="d-val-col">
+          <div class="d-val-num" id="dValNum">—</div>
+          <div class="d-val-lbl">Market Value</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Physical -->
+    <div class="d-sec">
+      <div class="d-sec-title">Physical Profile</div>
+      <div class="d-grid3">
+        <div class="d-tile"><div class="d-tile-val" id="dHeight">—</div><div class="d-tile-lbl">Height</div></div>
+        <div class="d-tile"><div class="d-tile-val" id="dWeight">—</div><div class="d-tile-lbl">Weight</div></div>
+        <div class="d-tile"><div class="d-tile-val" id="dFoot">—</div><div class="d-tile-lbl">Pref. Foot</div></div>
+      </div>
+    </div>
+
+    <!-- National Team Stats -->
+    <div class="d-sec">
+      <div class="d-sec-title">National Team Stats</div>
+      <div class="d-stat2-grid">
+        <div class="d-st-tile">
+          <div class="d-st-val" id="dCaps">—</div>
+          <div class="d-st-lbl">Caps</div>
+        </div>
+        <div class="d-st-tile">
+          <div class="d-st-val" id="dCareerGoals">—</div>
+          <div class="d-st-lbl">Goals</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:32px"></div>
+  </div><!-- /d-scroll -->
+
+  <!-- Share Modal (inside detail page) -->
+  <div class="share-overlay" id="shareOverlay" onclick="closeShareOut(event)">
+    <div class="share-modal" onclick="event.stopPropagation()">
+      <div class="share-title">Share Player</div>
+      <div class="share-match-lbl" id="sharePlayerLbl">—</div>
+      <div class="share-grid">
+        <div class="share-opt" onclick="shareTo('facebook')">
+          <div class="share-icon" style="background:#1877F2">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+          </div>
+          <span class="share-lbl">Facebook</span>
+        </div>
+        <div class="share-opt" onclick="shareTo('instagram')">
+          <div class="share-icon" style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
+          </div>
+          <span class="share-lbl">Instagram</span>
+        </div>
+        <div class="share-opt" onclick="shareTo('twitter')">
+          <div class="share-icon" style="background:#000">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M3 4h4.5L21 20h-4.5L3 4z"/><path d="M4 20L10.5 12M13.5 12L20 4" stroke="black" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <span class="share-lbl">X</span>
+        </div>
+        <div class="share-opt" onclick="shareTo('wechat')">
+          <div class="share-icon" style="background:#07C160">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M9.5 2C5.4 2 2 5 2 8.8c0 2 1 3.8 2.6 5l-.7 2.2 2.5-1.2c.9.3 1.9.4 2.9.4h.3c-.1-.4-.2-.8-.2-1.2C9.4 11 12.3 8.4 16 8.1 15.2 4.7 12.6 2 9.5 2z"/><path d="M22 14.2c0-3.1-3-5.6-6.7-5.6S8.6 11.1 8.6 14.2s3 5.6 6.7 5.6c.8 0 1.5-.1 2.2-.3l2 1-.6-1.8C20.9 17.5 22 16 22 14.2z"/></svg>
+          </div>
+          <span class="share-lbl">WeChat</span>
+        </div>
+      </div>
+      <div class="share-cancel" onclick="closeShare()">Cancel</div>
+    </div>
+  </div>
+
+</div><!-- /detail-page -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CLUB DATA — shield colors + abbreviations ──
+const CLUBS = {
+  'Real Madrid':     {abbr:'RM',  bg:'#FEBE10',fg:'#663399'},
+  'Bayern Munich':   {abbr:'FCB', bg:'#DC052D',fg:'#fff'},
+  'Arsenal':         {abbr:'AFC', bg:'#EF0107',fg:'#fff'},
+  'Man City':        {abbr:'MCI', bg:'#6CABDD',fg:'#fff'},
+  'Barcelona':       {abbr:'FCB', bg:'#A50044',fg:'#EDBB00'},
+  'Inter Milan':     {abbr:'IM',  bg:'#0068A8',fg:'#fff'},
+  'Liverpool':       {abbr:'LFC', bg:'#C8102E',fg:'#F6EB61'},
+  'Brighton':        {abbr:'BHA', bg:'#0057B8',fg:'#fff'},
+  'Fiorentina':      {abbr:'ACF', bg:'#702082',fg:'#fff'},
+  'Atlético Madrid': {abbr:'ATM', bg:'#CE3524',fg:'#fff'},
+  'Galatasaray':     {abbr:'GS',  bg:'#E30A17',fg:'#F5AA1E'},
+  'Inter Miami':     {abbr:'MIA', bg:'#231F20',fg:'#F7B5CD'},
+};
+const CLUB_LEAGUES = {
+  'es':'La Liga · Spain','gb-eng':'Premier League · England','de':'Bundesliga · Germany',
+  'it':'Serie A · Italy','fr':'Ligue 1 · France','tr':'Süper Lig · Turkey','us':'MLS · USA'
+};
+
+// Club shield SVG
+function shieldSVG(club, size=44){
+  const d = CLUBS[club] || {abbr:(club||'?')[0], bg:'#8E8E93', fg:'#fff'};
+  const ab = d.abbr.length > 3 ? d.abbr.slice(0,3) : d.abbr;
+  const fs = ab.length === 1 ? 14 : ab.length === 2 ? 12 : 10;
+  return `<svg width="${size}" height="${Math.round(size*50/44)}" viewBox="0 0 44 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22 2L4 9v14c0 13 9 22 18 25 9-3 18-12 18-25V9L22 2z" fill="${d.bg}"/>
+    <path d="M22 2L4 9v14c0 13 9 22 18 25 9-3 18-12 18-25V9L22 2z" stroke="rgba(0,0,0,.15)" stroke-width=".5" fill="none"/>
+    <text x="22" y="${Math.round(size*0.6)}" text-anchor="middle" dominant-baseline="middle"
+      fill="${d.fg}" font-size="${fs}" font-weight="800"
+      font-family="-apple-system,sans-serif" letter-spacing="-0.5">${ab}</text>
+  </svg>`;
+}
+
+// ── 5-POINTED STAR, DIVIDED INTO 4 SEGMENTS ──
+// Outer r=9, inner r=3.5, center (10,10) in 20×20 viewBox
+// Path: 10 points alternating outer/inner tips, starting at top
+const STAR5_PATH =
+  'M10 1L12.06 7.17L18.56 7.22L13.33 11.08L15.29 17.28L10 13.5L4.71 17.28L6.67 11.08L1.44 7.22L7.94 7.17Z';
+
+// frac: 0–1. Quantized to 4 steps (0, 0.25, 0.5, 0.75, 1)
+// fillW drives a horizontal clipRect to show frac of the star in gold
+let _starUID = 0;
+function starSVG5(frac, size=22){
+  const uid = 's' + (_starUID++);
+  // quantize to nearest 0.25
+  const q = Math.round(frac * 4) / 4;
+  const fillW = (q * size).toFixed(2);
+  const scale = (size / 20).toFixed(4);
+  return `<svg class="d-star-svg" width="${size}" height="${size}" viewBox="0 0 20 20" fill="none">
+    <defs><clipPath id="${uid}"><rect x="0" y="0" width="${fillW / scale}" height="20"/></clipPath></defs>
+    <path d="${STAR5_PATH}" fill="#2C2C2E" stroke="#111" stroke-width=".4"/>
+    <path d="${STAR5_PATH}" fill="#FFD700" stroke="#B8860B" stroke-width=".5" clip-path="url(#${uid})"/>
+  </svg>`;
+}
+// ovr / 20 → total stars (0–5), quantized to 0.25 steps
+function starsHTML(ovr){
+  _starUID = 0;
+  const total = Math.round((ovr / 20) * 4) / 4;  // e.g. 83→4.15→4.25
+  const html = [];
+  for(let i=0;i<5;i++){
+    const frac = Math.min(1, Math.max(0, total - i));
+    html.push(starSVG5(frac));
+  }
+  return html.join('');
+}
+
+// ── PLAYER DATA ──
+// Luminance check
+function isLightColor(hex){
+  const c=hex.replace('#','');
+  if(/^fff/i.test(c)) return true;
+  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
+  return (r*299+g*587+b*114)/1000>128;
+}
+// Blend primary color onto dark base (#1C1C2E) at given alpha
+function blendOnDark(hex, alpha){
+  const c=hex.replace('#','');
+  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
+  const br=Math.round(28*(1-alpha)+r*alpha);
+  const bg=Math.round(28*(1-alpha)+g*alpha);
+  const bb=Math.round(46*(1-alpha)+b*alpha);
+  return `rgb(${br},${bg},${bb})`;
+}
+// Blend secondary color onto white base at given alpha (subtle tint)
+function blendOnWhite(hex, alpha){
+  if(!hex||hex==='#FFFFFF'||hex==='#ffffff') return '#F5EFE8';
+  const c=hex.replace('#','');
+  const r=parseInt(c.slice(0,2),16),g=parseInt(c.slice(2,4),16),b=parseInt(c.slice(4,6),16);
+  const br=Math.round(255*(1-alpha)+r*alpha);
+  const bg=Math.round(245*(1-alpha)+g*alpha);  // slightly warm white base
+  const bb=Math.round(232*(1-alpha)+b*alpha);
+  return `rgb(${br},${bg},${bb})`;
+}
+
+const PLAYERS = [
+  {id:1, name:'K. Mbappé',     full:'Kylian Mbappé',        country:'France',      cc:'fr',     club:'Real Madrid',   clubCC:'es',  pos:'FW',age:27,ovr:95,spd:97,atk:93,pas:84,dri:96,def:37,phy:78,value:180,height:'178 cm',weight:'73 kg',foot:'R',apps:2,goals:3,assists:1,mins:180,caps:77,avgMins:72,cGoals:48,cAssists:22},
+  {id:2, name:'L. Messi',      full:'Lionel Messi',          country:'Argentina',   cc:'ar',     club:'Inter Miami',   clubCC:'us',  pos:'FW',age:38,ovr:94,spd:65,atk:91,pas:91,dri:95,def:36,phy:66,value:35, height:'170 cm',weight:'72 kg',foot:'L',apps:2,goals:2,assists:2,mins:180,caps:191,avgMins:67,cGoals:109,cAssists:56},
+  {id:3, name:'Vinícius Jr.',  full:'Vinícius Júnior',       country:'Brazil',      cc:'br',     club:'Real Madrid',   clubCC:'es',  pos:'FW',age:24,ovr:92,spd:96,atk:86,pas:80,dri:94,def:30,phy:73,value:180,height:'176 cm',weight:'73 kg',foot:'R',apps:2,goals:1,assists:1,mins:180,caps:40,avgMins:68,cGoals:12,cAssists:7},
+  {id:4, name:'J. Bellingham', full:'Jude Bellingham',       country:'England',     cc:'gb-eng', club:'Real Madrid',   clubCC:'es',  pos:'MF',age:21,ovr:91,spd:78,atk:82,pas:87,dri:88,def:75,phy:82,value:180,height:'186 cm',weight:'75 kg',foot:'R',apps:2,goals:1,assists:2,mins:180,caps:38,avgMins:70,cGoals:12,cAssists:8},
+  {id:5, name:'H. Kane',       full:'Harry Kane',             country:'England',     cc:'gb-eng', club:'Bayern Munich', clubCC:'de',  pos:'FW',age:31,ovr:90,spd:71,atk:93,pas:83,dri:83,def:47,phy:83,value:70, height:'188 cm',weight:'86 kg',foot:'R',apps:2,goals:2,assists:0,mins:180,caps:96,avgMins:71,cGoals:68,cAssists:18},
+  {id:6, name:'A. Becker',     full:'Alisson Becker',        country:'Brazil',      cc:'br',     club:'Liverpool',     clubCC:'gb-eng',pos:'GK',age:32,ovr:90,spd:55,atk:16,pas:80,dri:60,def:14,phy:68,value:50,height:'191 cm',weight:'91 kg',foot:'R',apps:2,goals:0,assists:0,mins:180,caps:78,avgMins:90,cGoals:0,cAssists:5},
+  {id:7, name:'M. ter Stegen', full:'Marc-André ter Stegen', country:'Germany',     cc:'de',     club:'Barcelona',     clubCC:'es',  pos:'GK',age:33,ovr:90,spd:55,atk:15,pas:82,dri:62,def:13,phy:72,value:45, height:'187 cm',weight:'85 kg',foot:'R',apps:2,goals:0,assists:0,mins:180,caps:43,avgMins:90,cGoals:0,cAssists:3},
+  {id:8, name:'P. Foden',      full:'Phil Foden',             country:'England',     cc:'gb-eng', club:'Man City',      clubCC:'gb-eng',pos:'MF',age:24,ovr:89,spd:84,atk:85,pas:88,dri:91,def:55,phy:67,value:150,height:'171 cm',weight:'69 kg',foot:'L',apps:2,goals:1,assists:0,mins:180,caps:38,avgMins:68,cGoals:11,cAssists:9},
+  {id:9, name:'P. Pedri',      full:'Pedro González',         country:'Spain',       cc:'es',     club:'Barcelona',     clubCC:'es',  pos:'MF',age:22,ovr:89,spd:77,atk:78,pas:91,dri:90,def:65,phy:68,value:100,height:'174 cm',weight:'60 kg',foot:'R',apps:2,goals:0,assists:2,mins:180,caps:42,avgMins:66,cGoals:7,cAssists:10},
+  {id:10,name:'J. Kimmich',    full:'Joshua Kimmich',         country:'Germany',     cc:'de',     club:'Bayern Munich', clubCC:'de',  pos:'MF',age:29,ovr:89,spd:72,atk:76,pas:92,dri:84,def:86,phy:79,value:60, height:'177 cm',weight:'73 kg',foot:'R',apps:2,goals:0,assists:1,mins:180,caps:83,avgMins:80,cGoals:18,cAssists:27},
+  {id:11,name:'J. Musiala',    full:'Jamal Musiala',          country:'Germany',     cc:'de',     club:'Bayern Munich', clubCC:'de',  pos:'MF',age:21,ovr:88,spd:83,atk:84,pas:85,dri:91,def:53,phy:68,value:150,height:'180 cm',weight:'70 kg',foot:'R',apps:2,goals:1,assists:1,mins:180,caps:36,avgMins:62,cGoals:13,cAssists:9},
+  {id:12,name:'B. Saka',       full:'Bukayo Saka',            country:'England',     cc:'gb-eng', club:'Arsenal',       clubCC:'gb-eng',pos:'FW',age:23,ovr:88,spd:85,atk:84,pas:85,dri:89,def:62,phy:68,value:150,height:'178 cm',weight:'72 kg',foot:'L',apps:2,goals:1,assists:1,mins:172,caps:52,avgMins:68,cGoals:16,cAssists:15},
+  {id:13,name:'L. Martínez',   full:'Lautaro Martínez',       country:'Argentina',   cc:'ar',     club:'Inter Milan',   clubCC:'it',  pos:'FW',age:27,ovr:87,spd:83,atk:88,pas:77,dri:84,def:42,phy:78,value:65, height:'174 cm',weight:'72 kg',foot:'R',apps:2,goals:2,assists:0,mins:180,caps:58,avgMins:72,cGoals:30,cAssists:14},
+  {id:14,name:'V. Osimhen',    full:'Victor Osimhen',         country:'Nigeria',     cc:'ng',     club:'Galatasaray',   clubCC:'tr',  pos:'FW',age:26,ovr:87,spd:91,atk:87,pas:70,dri:84,def:39,phy:85,value:75, height:'185 cm',weight:'78 kg',foot:'R',apps:2,goals:1,assists:0,mins:180,caps:47,avgMins:68,cGoals:22,cAssists:9},
+  {id:15,name:'K. Havertz',    full:'Kai Havertz',            country:'Germany',     cc:'de',     club:'Arsenal',       clubCC:'gb-eng',pos:'FW',age:25,ovr:85,spd:80,atk:83,pas:79,dri:82,def:52,phy:78,value:70,height:'194 cm',weight:'83 kg',foot:'L',apps:2,goals:1,assists:0,mins:180,caps:52,avgMins:70,cGoals:26,cAssists:10},
+  {id:16,name:'R. De Paul',    full:'Rodrigo De Paul',        country:'Argentina',   cc:'ar',     club:'Atlético Madrid',clubCC:'es', pos:'MF',age:30,ovr:85,spd:80,atk:78,pas:86,dri:84,def:74,phy:80,value:30, height:'180 cm',weight:'75 kg',foot:'R',apps:2,goals:0,assists:1,mins:180,caps:87,avgMins:82,cGoals:29,cAssists:33},
+  {id:17,name:'S. Amrabat',    full:'Sofyan Amrabat',         country:'Morocco',     cc:'ma',     club:'Fiorentina',    clubCC:'it',  pos:'MF',age:28,ovr:83,spd:73,atk:63,pas:80,dri:75,def:84,phy:83,value:35, height:'184 cm',weight:'79 kg',foot:'R',apps:2,goals:0,assists:1,mins:180,caps:56,avgMins:80,cGoals:3,cAssists:6},
+  {id:18,name:'W. Endo',       full:'Wataru Endo',            country:'Japan',       cc:'jp',     club:'Liverpool',     clubCC:'gb-eng',pos:'MF',age:31,ovr:83,spd:68,atk:62,pas:79,dri:74,def:85,phy:80,value:25,height:'175 cm',weight:'75 kg',foot:'R',apps:2,goals:0,assists:0,mins:180,caps:73,avgMins:82,cGoals:8,cAssists:12},
+  {id:19,name:'H. Ziyech',     full:'Hakim Ziyech',           country:'Morocco',     cc:'ma',     club:'Galatasaray',   clubCC:'tr',  pos:'FW',age:32,ovr:82,spd:78,atk:79,pas:83,dri:82,def:32,phy:63,value:12, height:'181 cm',weight:'70 kg',foot:'L',apps:2,goals:1,assists:0,mins:171,caps:67,avgMins:72,cGoals:23,cAssists:16},
+  {id:20,name:'S. Mitoma',     full:'Kaoru Mitoma',           country:'Japan',       cc:'jp',     club:'Brighton',      clubCC:'gb-eng',pos:'FW',age:27,ovr:82,spd:89,atk:79,pas:78,dri:86,def:40,phy:62,value:42,height:'178 cm',weight:'71 kg',foot:'L',apps:2,goals:1,assists:0,mins:170,caps:28,avgMins:66,cGoals:9,cAssists:7},
+];
+
+const POS_CLASS={GK:'pos-gk',DF:'pos-df',MF:'pos-mf',FW:'pos-fw'};
+function ovrColor(v){return v>=90?'#B8860B':v>=85?'#007AFF':v>=80?'#1C7A3E':'#8E8E93'}
+function ovrTier(v){return v>=90?'Elite':v>=85?'World Class':v>=80?'Top Player':'Good'}
+function avSVG(big){
+  const s=big?72:36,head=big?16:10,ry=big?18:8;
+  return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" fill="none">
+    <circle cx="${s/2}" cy="${s/2-2}" r="${head}" fill="#C7C7CC"/>
+    <ellipse cx="${s/2}" cy="${s-2}" rx="${s/2-2}" ry="${ry}" fill="#C7C7CC"/>
+  </svg>`;
+}
+
+// ── SORT & RENDER ──
+let sortMode = 'ovr';
+let posFilter = 'all';
+function setSort(mode, el){
+  sortMode = mode;
+  document.querySelectorAll('.seg-btn').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  // Show/hide position sub-filter
+  const pf = document.getElementById('posFilter');
+  if(mode === 'pos'){ pf.classList.add('show'); }
+  else { pf.classList.remove('show'); posFilter = 'all'; document.querySelectorAll('.pos-chip').forEach((c,i)=>c.classList.toggle('on',i===0)); }
+  renderList();
+}
+function setPosFilter(p, el){
+  posFilter = p;
+  document.querySelectorAll('.pos-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  renderList();
+}
+
+function renderList(){
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let list = PLAYERS.filter(p=>
+    !q || p.name.toLowerCase().includes(q) || p.full.toLowerCase().includes(q) ||
+    p.country.toLowerCase().includes(q) || p.club.toLowerCase().includes(q) || p.pos.toLowerCase().includes(q)
+  );
+  const c = document.getElementById('playerList');
+  c.innerHTML = '';
+
+  if(sortMode === 'ovr'){
+    list = list.slice().sort((a,b)=>b.ovr-a.ovr);
+    const bands=[{lbl:'Elite · 90+',min:90},{lbl:'World Class · 85 – 89',min:85},{lbl:'Top Player · 80 – 84',min:80},{lbl:'Good · Under 80',min:0}];
+    let bi=-1;
+    list.forEach((p,i)=>{
+      const nb=bands.findIndex(b=>p.ovr>=b.min);
+      if(nb!==bi){bi=nb;addHd(c,bands[nb].lbl,null);}
+      c.appendChild(makeRow(p,i+1));
+    });
+  } else { // pos
+    const posOrder=['GK','DF','MF','FW'];
+    const posName={GK:'Goalkeeper',DF:'Defender',MF:'Midfielder',FW:'Forward'};
+    if(posFilter !== 'all') list = list.filter(p=>p.pos===posFilter);
+    list = list.slice().sort((a,b)=>posOrder.indexOf(a.pos)-posOrder.indexOf(b.pos)||b.ovr-a.ovr);
+    let lastP='';
+    list.forEach((p,i)=>{
+      if(p.pos!==lastP){
+        lastP=p.pos;
+        addHd(c,posName[p.pos]||p.pos,null);
+      }
+      c.appendChild(makeRow(p,i+1));
+    });
+  }
+}
+
+function addHd(c,lbl,flagCC){
+  const hd=document.createElement('div');
+  hd.className='sec-hd';
+  if(flagCC){
+    hd.innerHTML=`<img src="https://flagcdn.com/w20/${flagCC}.png" style="width:16px;height:11px;border-radius:2px;object-fit:cover;border:.5px solid rgba(0,0,0,.08);flex-shrink:0">${lbl}`;
+  } else {
+    hd.textContent=lbl;
+  }
+  c.appendChild(hd);
+}
+
+function makeRow(p,rank){
+  const row=document.createElement('div');
+  row.className='pr';
+  const oc=ovrColor(p.ovr);
+  row.innerHTML=`
+    <span class="pr-rank">${rank}</span>
+    <div class="pr-av">${avSVG(false)}</div>
+    <div class="pr-info">
+      <div class="pr-name">${p.name}</div>
+      <div class="pr-country-row">
+        <img class="pr-cflag" src="https://flagcdn.com/w20/${p.cc}.png" alt="" loading="lazy">
+        <span class="pr-cname">${p.country}</span>
+      </div>
+    </div>
+    <span class="pr-pos ${POS_CLASS[p.pos]||''}">${p.pos}</span>
+    <span class="pr-ovr" style="color:${oc}">${p.ovr}</span>
+    <svg class="pr-chev" width="7" height="12" viewBox="0 0 7 12" fill="none"><path d="M1 1l5 5-5 5" stroke="#3C3C43" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity=".2"/></svg>`;
+  row.addEventListener('click',()=>openDetail(p));
+  return row;
+}
+
+// ── DETAIL ──
+let currentPlayer = null;
+const TEAM_COLORS = {
+  'fr': {primary:'#002395', secondary:'#ED2939'},
+  'ar': {primary:'#74ACDF', secondary:'#FFFFFF'},
+  'br': {primary:'#009C3B', secondary:'#FFDF00'},
+  'gb-eng': {primary:'#CF081F', secondary:'#FFFFFF'},
+  'de': {primary:'#000000', secondary:'#DD0000'},
+  'es': {primary:'#AA151B', secondary:'#F1BF00'},
+  'jp': {primary:'#BC002D', secondary:'#FFFFFF'},
+  'ma': {primary:'#006233', secondary:'#C1272D'},
+  'ng': {primary:'#008751', secondary:'#FFFFFF'},
+  'kr': {primary:'#003478', secondary:'#CD2E3A'},
+  'it': {primary:'#009246', secondary:'#CE2B37'},
+  'pt': {primary:'#006600', secondary:'#FF0000'},
+  'nl': {primary:'#FF6600', secondary:'#FFFFFF'},
+};
+const DEFAULT_COLORS = {primary:'#1C1C2E', secondary:'#F5EFE8'};
+
+// ── OPEN DETAIL ──
+function openDetail(p){
+  currentPlayer = p;
+  document.getElementById('dNavTitle').textContent = p.name;
+  document.getElementById('dBigAv').innerHTML = avSVG(true);
+  document.getElementById('dFullName').textContent = p.full;
+
+  // Team colors
+  const tc = TEAM_COLORS[p.cc] || DEFAULT_COLORS;
+  // Zone A: secondary color (softened via alpha on white base)
+  const aEl = document.getElementById('dHeroA');
+  aEl.style.background = blendOnWhite(tc.secondary || '#F5EFE8', 0.25);
+  document.getElementById('dFullName').style.color = '#1A1A1A';
+  // Zone B: primary color (softened over dark base)
+  document.getElementById('dHeroB').style.background = blendOnDark(tc.primary, 0.65);
+  document.getElementById('dCntryName').style.color = 'rgba(255,255,255,.7)';
+
+  // Zone B — country flag taps through to team detail
+  const flagEl = document.getElementById('dBigFlag');
+  flagEl.src = `https://flagcdn.com/w40/${p.cc}.png`;
+  flagEl.style.cursor = 'pointer';
+  flagEl.onclick = () => { sessionStorage.setItem('tab3_team', p.cc); window.location.href = 'tab3.html'; };
+  const cntryEl = document.getElementById('dCntryName');
+  cntryEl.textContent = p.country;
+  cntryEl.style.cursor = 'pointer';
+  cntryEl.onclick = () => { sessionStorage.setItem('tab3_team', p.cc); window.location.href = 'tab3.html'; };
+  document.getElementById('dAge').textContent = p.age;
+  const posClsMap = {GK:'pb-gk',DF:'pb-df',MF:'pb-mf',FW:'pb-fw'};
+  const posEl = document.getElementById('dPosBadge');
+  posEl.textContent = p.pos;
+  posEl.className = 'd-pos-badge-dark ' + (posClsMap[p.pos]||'');
+  // OVR
+  const oc=ovrColor(p.ovr);
+  const ovrEl=document.getElementById('dOvrNum');
+  ovrEl.textContent=p.ovr; ovrEl.style.color=oc;
+  // tier text removed
+  document.getElementById('dStars').innerHTML=starsHTML(p.ovr);
+
+  // Physical
+  document.getElementById('dHeight').textContent=p.height;
+  document.getElementById('dWeight').textContent=p.weight;
+  document.getElementById('dFoot').textContent=p.foot==='R'?'Right':'Left';
+
+  // Club shield
+  document.getElementById('dClubShield').innerHTML=shieldSVG(p.club,44);
+  document.getElementById('dClubName').textContent=p.club;
+  document.getElementById('dClubFlag').src=`https://flagcdn.com/w20/${p.clubCC}.png`;
+  document.getElementById('dClubLeague').textContent=CLUB_LEAGUES[p.clubCC]||p.clubCC;
+  document.getElementById('dValNum').textContent=`€${p.value}M`;
+
+  // Stats: Caps + Career Goals only
+  document.getElementById('dCaps').textContent = p.caps || '—';
+  document.getElementById('dCareerGoals').textContent = p.cGoals || '—';
+
+  drawRadar(p);
+  document.getElementById('dSharePlayerLbl') && (document.getElementById('dSharePlayerLbl').textContent=p.full);
+  document.getElementById('sharePlayerLbl').textContent=p.full;
+
+  document.getElementById('detailPage').querySelector('.d-scroll').scrollTop=0;
+  document.getElementById('detailPage').classList.add('open');
+}
+function closeDetail(){document.getElementById('detailPage').classList.remove('open')}
+
+// ── RADAR ──
+function drawRadar(p){
+  const canvas=document.getElementById('radarCanvas');
+  const ctx=canvas.getContext('2d');
+  const DPR=window.devicePixelRatio||1,SIZE=220;
+  canvas.width=SIZE*DPR;canvas.height=SIZE*DPR;
+  canvas.style.width=SIZE+'px';canvas.style.height=SIZE+'px';
+  ctx.scale(DPR,DPR);
+  const cx=SIZE/2,cy=SIZE/2,r=76;
+  ctx.clearRect(0,0,SIZE,SIZE);
+
+  const axes=['SPD','ATK','PAS','DRI','DEF','PHY'];
+  const vals=[p.spd,p.atk,p.pas,p.dri,p.def,p.phy];
+  const n=axes.length,step=(Math.PI*2)/n,start=-Math.PI/2;
+  const pt=(i,f)=>{const a=start+i*step;return[cx+Math.cos(a)*r*f,cy+Math.sin(a)*r*f]};
+  const cr=0,cg=122,cb=255;
+
+  [.25,.5,.75,1].forEach((f,ri)=>{
+    ctx.beginPath();
+    for(let i=0;i<n;i++){const[x,y]=pt(i,f);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+    ctx.closePath();
+    ctx.strokeStyle=ri===3?'rgba(60,60,67,.18)':'rgba(60,60,67,.08)';
+    ctx.lineWidth=ri===3?1.2:.8;ctx.stroke();
+  });
+  for(let i=0;i<n;i++){
+    const[x,y]=pt(i,1);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);
+    ctx.strokeStyle='rgba(60,60,67,.1)';ctx.lineWidth=.8;ctx.stroke();
+  }
+  ctx.beginPath();
+  for(let i=0;i<n;i++){const[x,y]=pt(i,vals[i]/100);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+  ctx.closePath();
+  const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+  grad.addColorStop(0,`rgba(${cr},${cg},${cb},.35)`);
+  grad.addColorStop(1,`rgba(${cr},${cg},${cb},.08)`);
+  ctx.fillStyle=grad;ctx.fill();
+  ctx.strokeStyle=`rgba(${cr},${cg},${cb},.9)`;ctx.lineWidth=2.2;ctx.stroke();
+  for(let i=0;i<n;i++){
+    const[x,y]=pt(i,vals[i]/100);
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=`rgba(${cr},${cg},${cb},.15)`;ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=`rgba(${cr},${cg},${cb},1)`;ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.stroke();
+  }
+  // Axis labels
+  for(let i=0;i<n;i++){
+    const a=start+i*step;
+    const lx=cx+Math.cos(a)*(r+18),ly=cy+Math.sin(a)*(r+18);
+    ctx.font='600 10px -apple-system,sans-serif';
+    ctx.fillStyle='rgba(60,60,67,.55)';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(axes[i],lx,ly);
+  }
+  // Value pills at 62% radius
+  for(let i=0;i<n;i++){
+    const a=start+i*step,vr=r*.62;
+    const vx=cx+Math.cos(a)*vr,vy=cy+Math.sin(a)*vr;
+    const pw=24,ph=15;
+    ctx.fillStyle='rgba(255,255,255,.94)';rrect(ctx,vx-pw/2,vy-ph/2,pw,ph,4);ctx.fill();
+    ctx.strokeStyle=`rgba(${cr},${cg},${cb},.3)`;ctx.lineWidth=.8;rrect(ctx,vx-pw/2,vy-ph/2,pw,ph,4);ctx.stroke();
+    ctx.font='600 9.5px -apple-system,sans-serif';
+    ctx.fillStyle=`rgba(${cr},${cg},${cb},.9)`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(vals[i],vx,vy);
+  }
+}
+function rrect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+// ── SHARE ──
+function openShare(){document.getElementById('shareOverlay').classList.add('open')}
+function closeShare(){document.getElementById('shareOverlay').classList.remove('open')}
+function closeShareOut(e){if(e.target===document.getElementById('shareOverlay'))closeShare()}
+function shareTo(platform){
+  const p=currentPlayer;
+  if(!p){closeShare();return;}
+  const text=encodeURIComponent(`${p.full} · OVR ${p.ovr} · FIFA World Cup 2026 #FIFAWorldCup2026`);
+  const url=encodeURIComponent('https://fifa.com/worldcup');
+  const links={
+    facebook:`https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`,
+    twitter:`https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+  };
+  if(platform==='instagram'||platform==='wechat'){
+    try{navigator.clipboard.writeText(decodeURIComponent(text))}catch(e){}
+    closeShare();showToast(platform==='instagram'?'Copied · Paste into Instagram':'Copied · Paste into WeChat');
+    return;
+  }
+  window.open(links[platform],'_blank','width=600,height=500');
+  closeShare();
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+renderList();
+// deep-link: auto-open a player navigated from the Teams tab
+const _pendingPlayer = sessionStorage.getItem('tab4_player');
+if(_pendingPlayer){
+  sessionStorage.removeItem('tab4_player');
+  const _p = PLAYERS.find(p => p.name === _pendingPlayer);
+  if(_p) setTimeout(() => openDetail(_p), 80);
+}
+</script>
+
+</body>
+</html>

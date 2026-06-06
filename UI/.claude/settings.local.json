@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" --help 2>&1 | Select-Object -First 40)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" info 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk --help 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" create --help 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk list 2>&1 | Select-Object -First 50)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" create --list 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk list 2>&1 | Select-Object -First 100)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk install --help 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk list 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk install build-tools 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" init 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk list --all 2>&1 | Select-Object -First 60)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk install \"platforms/android-35\" \"build-tools/35.0.0\" \"platform-tools\" 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" create empty-activity --name=\"WC 2026\" --output=\"D:\\\\Dev\\\\WC26\\\\App\" --minSdk=26 2>&1)",
+      "PowerShell(Get-ChildItem \"D:\\\\Dev\\\\WC26\\\\App\" -Recurse -Depth 4 | Where-Object { -not $_.PSIsContainer } | Select-Object FullName | Format-Table -AutoSize)",
+      "PowerShell(Get-ChildItem \"D:\\\\Dev\\\\WC26\\\\App\\\\app\\\\src\" -Recurse | Where-Object { -not $_.PSIsContainer } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem \"D:\\\\Dev\\\\WC26\\\\Pic\\\\Club\" | Where-Object { $_.Name -match \"Real Madrid|Inter Miami|Bayern|Man City|Arsenal|Barcelona|Galatasaray|Inter Milan|Atletico|Atlético|Fiorentina|Brighton|Liverpool\" } | Select-Object Name)",
+      "PowerShell(Get-ChildItem \"D:\\\\Dev\\\\WC26\\\\Pic\\\\Club\" | Where-Object { $_.Name -match \"City|Inter\" } | Select-Object Name)",
+      "PowerShell(Get-ChildItem \"D:\\\\Dev\\\\WC26\\\\Pic\\\\Club\" | Where-Object { $_.Name -match \"Internazionale|Inter Milan|Fc Inter\" } | Select-Object Name)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" --help 2>&1)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk --help 2>&1 | Select-Object -First 30)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(winget install *)",
+      "PowerShell(winget search *)",
+      "PowerShell(winget *)",
+      "PowerShell(& \"D:\\\\AndroidCLI\\\\android.exe\" sdk list 2>&1 | Select-Object -First 40)"
+    ]
+  }
+}

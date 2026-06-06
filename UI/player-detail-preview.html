@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Player Detail Layout Preview</title>
+  <style>
+    :root {
+      --bg: #f2f2f7;
+      --surface: #ffffff;
+      --text: #1c1c1e;
+      --muted: #8e8e93;
+      --tile: #f2f2f7;
+      --blue: #007aff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #d9d9de;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .phone {
+      width: 390px;
+      max-width: 100%;
+      height: 780px;
+      background: var(--bg);
+      border-radius: 34px;
+      overflow: hidden;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .nav {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: rgba(255, 255, 255, 0.96);
+      border-bottom: 1px solid rgba(60, 60, 67, 0.18);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .back {
+      color: var(--blue);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .hero {
+      background: #f3e8db;
+      padding: 28px 20px 22px;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: linear-gradient(#ded6cf, #c9c3be);
+      overflow: hidden;
+    }
+
+    .avatar::before {
+      content: "";
+      display: block;
+      width: 42px;
+      height: 42px;
+      margin: 14px auto 0;
+      border-radius: 50%;
+      background: #a9a9af;
+    }
+
+    .avatar::after {
+      content: "";
+      display: block;
+      width: 78px;
+      height: 42px;
+      margin: 3px auto 0;
+      border-radius: 36px 36px 0 0;
+      background: #a9a9af;
+    }
+
+    .name {
+      font-size: 26px;
+      line-height: 32px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+    }
+
+    .rating {
+      display: grid;
+      grid-template-columns: 1fr 56px 56px 1fr;
+      gap: 8px;
+      align-items: stretch;
+      background: #1d2f57;
+      padding: 14px;
+      color: #fff;
+    }
+
+    .flag {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 11px;
+    }
+
+    .flag-box {
+      width: 58px;
+      height: 40px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #74acdf 0 33%, #fff 33% 66%, #74acdf 66%);
+    }
+
+    .dark-tile {
+      min-height: 68px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .dark-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.42);
+      letter-spacing: 0.7px;
+    }
+
+    .dark-value {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .ovr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .ovr-value {
+      font-size: 40px;
+      line-height: 42px;
+      font-weight: 900;
+      color: #ffd700;
+      letter-spacing: -1px;
+    }
+
+    .stars {
+      color: #ffd700;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .section {
+      margin-top: 10px;
+      background: var(--surface);
+      padding: 14px 16px;
+    }
+
+    .section-title {
+      margin-bottom: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--muted);
+    }
+
+    .club-row {
+      min-height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .club-logo {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      background: #fff;
+      border: 1px solid rgba(60, 60, 67, 0.16);
+      display: grid;
+      place-items: center;
+      color: #c9a227;
+      font-size: 27px;
+      font-weight: 900;
+      flex: 0 0 54px;
+    }
+
+    .club-text {
+      min-width: 0;
+      max-width: 220px;
+    }
+
+    .club-name {
+      max-width: 100%;
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .club-league {
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .metric-grid {
+      display: grid;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .metric-grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .metric-grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric {
+      min-width: 0;
+      text-align: center;
+    }
+
+    .metric-value {
+      height: 48px;
+      border-radius: 12px;
+      background: var(--tile);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+    }
+
+    .national .metric-value {
+      font-size: 24px;
+    }
+
+    .metric-label {
+      margin-top: 5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.4px;
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <div class="nav">
+      <div class="back">‹ Players</div>
+      <div>L. Messi</div>
+    </div>
+
+    <section class="hero">
+      <div class="avatar"></div>
+      <div class="name">Lionel Messi</div>
+    </section>
+
+    <section class="rating">
+      <div class="flag">
+        <div class="flag-box"></div>
+        <div>Argentina</div>
+      </div>
+      <div class="dark-tile">
+        <div class="dark-label">AGE</div>
+        <div class="dark-value">38</div>
+      </div>
+      <div class="dark-tile">
+        <div class="dark-label">POS</div>
+        <div class="dark-value">RW</div>
+      </div>
+      <div class="ovr">
+        <div class="ovr-value">94</div>
+        <div class="stars">★★★★★</div>
+      </div>
+    </section>
+
+    <section class="section club">
+      <div class="section-title">CLUB</div>
+      <div class="club-row">
+        <div class="club-logo">RM</div>
+        <div class="club-text">
+          <div class="club-name">Real Madrid</div>
+          <div class="club-league">Spain</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-title">PHYSICAL PROFILE</div>
+      <div class="metric-grid three">
+        <div class="metric">
+          <div class="metric-value">178 cm</div>
+          <div class="metric-label">HEIGHT</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">73 kg</div>
+          <div class="metric-label">WEIGHT</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">Right</div>
+          <div class="metric-label">PREF. FOOT</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section national">
+      <div class="section-title">NATIONAL TEAM</div>
+      <div class="metric-grid two">
+        <div class="metric">
+          <div class="metric-value">191</div>
+          <div class="metric-label">CAPS</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">109</div>
+          <div class="metric-label">GOALS</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

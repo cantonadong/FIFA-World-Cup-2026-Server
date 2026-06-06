@@ -1,0 +1,193 @@
+ui\tab1.html 为设计稿，保留原型中全部设计要素、功能前提下，目标为构建 native    app，使用 pic\club 为俱乐部logo，country 为 国家队国旗，player                  为球员头像,team 为 国家队队徽。data\ 包括 match 比赛安排 team 国家队信息        vanue 球场信息 roster 球员名单 player 为球员数值属性。给出详细需求文档，先只    出tab1.html的全部内容，交互、视觉可以完善，越好看越好，参考主流的ios app        design
+
+
+
+Australia
+Iran
+Iraq
+Japan
+Jordan
+Qatar
+Saudi Arabia
+South Korea
+Uzbekistan
+Algeria
+Cape Verde
+DR Congo
+Egypt
+Ghana
+Ivory Coast
+Morocco
+Senegal
+South Africa
+Tunisia
+Canada
+Curaçao
+Haiti
+Mexico
+Panama
+United States
+Argentina
+Brazil
+Colombia
+Ecuador
+Paraguay
+Uruguay
+New Zealand
+Austria
+Belgium
+Bosnia and Herzegovina
+Croatia
+Czech Republic
+England
+France
+Germany
+Netherlands
+Norway
+Portugal
+Scotland
+Spain
+Sweden
+Switzerland
+Turkey
+
+球员数据、头像、俱乐部、国家
+https://www.ea.com/games/ea-sports-fc/ratings
+
+国家名单
+https://www.ea.com/games/ea-sports-fc/ratings/nations-ratings/france/18
+
+球队名单
+https://www.si.com/soccer/2026-world-cup-rosters-full-list-all-official-squads
+https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_squads
+
+https://en.wikipedia.org/wiki/2026_FIFA_World_Cup
+
+球员头像
+https://en.soccerwiki.org/player.php?pid=95949
+
+球员数据fm
+https://fminside.net/players
+https://sofifa.com/player/242964/anthony-gordon/260035/?attr=fut
+https://fminside.net/
+
+继续修改 app ,修改后打包apk。
+1.底部四个tab图标稍微下移，最好是图标位置在tab按钮水平居中对齐。
+Tab1 
+1. upcoming matches 模块，卡片中，国旗应该放大显示，高度的长度应该与圆形可显示区域定格显示.
+tab2
+1. 卡片中，国旗显示不完整，需要显示完整
+tab3
+球队详情页，
+第二部分
+1. 国旗+缩写，水平位置稍微下移，现在显示视觉上稍微高了一点
+2. 国家评分，为球队所有球员ovr均分取整
+第三部分
+1. 属性信息，需要显示属性名称、数据数值，颜色。属性名称和位置布局同球员详情页顺序（视觉效果参见UI\tab3.html 内容
+第四部分
+1. 显示球队历史，功能效果完整复现 UI\tab3.html 内容
+大名单
+0. 快捷位置筛选，按钮宽度显示为通栏
+1. 显示队员头像，Pic\Player 中
+2. 显示队员号码，如没有则留空 Data\Player
+3. 显示球员ovr分数，Data\Player 和对应颜色
+4. 点击球员行，可跳转至球员详情页
+5. 修正球员名称、球队名称中，非英文字母显示不正确 的问题
+
+
+
+https://zeldauniverse.net/media/fonts/
+
+Producer
+
+Director
+Production Designer
+VFX Supervisor
+
+
+你接下来按这几步操作：
+
+  1. 到 GitHub 新建仓库，例如 wc26-match-data。
+  2. 只上传 D:\Dev\WC26\Server 里面的内容到仓库根目录：public/data/match.csv、
+     vercel.json、README.md。
+
+  3. 到 Vercel 点 New Project，选择这个 GitHub 仓库。Vercel 官方文档说明 Git 仓
+     库导入后，每次 push 会自动部署；项目配置也可用 vercel.json 控制 headers。参
+     考：
+     https://vercel.com/docs/deployments/git
+     https://vercel.com/docs/project-configuration/vercel-json
+
+  4. Vercel 配置建议：
+      - Framework Preset：Other
+      - Build Command：留空
+      - Output Directory：public
+      - Root Directory：如果仓库只放了 Server 内容就留空；如果你上传了整个
+        WC26，就填 Server
+
+  5. 部署完成后，打开这个地址确认能看到 CSV：
+     https://你的项目名.vercel.app/data/match.csv
+
+  6. 把这个 URL 填到 App/app/build.gradle.kts:20，替换现在的：
+     https://YOUR_VERCEL_PROJECT.vercel.app/data/match.csv
+
+  7. 重新构建 APK。以后只要改 GitHub 里的 public/data/match.csv 并提交，Vercel
+     自动部署，App 下拉刷新就会取最新结果。
+
+  比分填写例子：
+
+  - 普通完赛：球队1得分=2，球队2得分=1，点球列留空。
+  - 点球大战：常规/加时比分填 1 和 1，点球列填 5 和 4。
+ 
+ 
+• 可以，整个项目可以上传到 GitHub。Vercel 端只要严格设置：
+
+  Root Directory = Server
+
+  这样 Vercel 只会部署：
+
+  Server/
+    vercel.json
+    public/
+      data/
+        results.csv
+
+  我已经按这个结构改好了，并删除了服务端旧的 match.csv，避免维护错文件。
+
+  现在你维护的唯一结果文件是：
+
+  Server/public/data/results.csv
+
+  表头已改为全英文精简格式：
+
+  match_id,team1,team2,score1,score2,penalty1,penalty2
+
+  示例：
+
+  "M001","Mexico","South Africa","","","",""
+
+  规则：
+
+  - 小组赛已确定对阵已填好。
+  - 球队名全部用 ASCII 英文，避免编码显示问题。
+  - 普通完赛只填 score1,score2。
+  - 点球大战再填 penalty1,penalty2。
+  - 未比赛留空。
+  - App 会根据小组赛结果自动更新小组排名，并自动推导后续淘汰赛对阵关系。
+
+  App 端也已改成读取：
+
+  https://YOUR_VERCEL_PROJECT.vercel.app/data/results.csv
+
+  你部署 Vercel 后，把真实 URL 替换到：
+
+  App/app/build.gradle.kts:19
+
+  然后重新打包 APK。
+
+  验证结果：
+
+  - assembleDebug 通过。
+  - assembleRelease 通过。
+  - APK 输出仍在：
+      - D:\Dev\WC26\App\app\build\outputs\apk\debug\app-debug.apk
+      - D:\Dev\WC26\App\app\build\outputs\apk\release\app-release-unsigned.apk
