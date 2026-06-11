@@ -8,6 +8,8 @@ import com.carldong.fifa.worldcup2026.data.DefaultDataRepository
 import com.carldong.fifa.worldcup2026.data.Match
 import com.carldong.fifa.worldcup2026.data.Team
 import com.carldong.fifa.worldcup2026.data.Venue
+import com.carldong.fifa.worldcup2026.data.localKickoff
+import com.carldong.fifa.worldcup2026.data.localKickoffDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,8 +57,8 @@ class ScheduleViewModel(app: Application) : AndroidViewModel(app) {
                 val venueMap = venues.associateBy { it.id }
 
                 val dateGroups = matches
-                    .groupBy { LocalDate.parse(it.date) }
-                    .map { (date, list) -> ScheduleDateGroup(date, list.sortedBy { it.time }) }
+                    .groupBy { it.localKickoffDate() ?: LocalDate.parse(it.date) }
+                    .map { (date, list) -> ScheduleDateGroup(date, list.sortedBy { it.localKickoff() }) }
                     .sortedBy { it.date }
 
                 val matchDates = dateGroups.map { it.date }.toSet()

@@ -31,24 +31,31 @@ import com.carldong.fifa.worldcup2026.R
 import com.carldong.fifa.worldcup2026.data.Match
 import com.carldong.fifa.worldcup2026.data.Team
 import com.carldong.fifa.worldcup2026.data.Venue
+import com.carldong.fifa.worldcup2026.data.googleCalendarUtcRange
+import com.carldong.fifa.worldcup2026.data.kickoffInstant
+import com.carldong.fifa.worldcup2026.data.localKickoffDateLabel
+import com.carldong.fifa.worldcup2026.data.localKickoffTimeLabel
 import com.carldong.fifa.worldcup2026.theme.*
 import com.carldong.fifa.worldcup2026.ui.components.CountryFlag
 import com.carldong.fifa.worldcup2026.ui.components.LiveDot
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.Month
+import java.time.YearMonth
 import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
 
-private val SCHED_START = LocalDate.of(2026, 6, 11)
-private val SCHED_END = LocalDate.of(2026, 7, 19)
+private val FALLBACK_SCHED_START = LocalDate.of(2026, 6, 11)
+private val FALLBACK_SCHED_END = LocalDate.of(2026, 7, 19)
 
-private val ALL_SCHED_DATES: List<LocalDate> by lazy {
+private fun scheduleDates(start: LocalDate, end: LocalDate): List<LocalDate> {
     val list = mutableListOf<LocalDate>()
-    var d = SCHED_START
-    while (!d.isAfter(SCHED_END)) { list.add(d); d = d.plusDays(1) }
-    list
+    var d = start
+    while (!d.isAfter(end)) {
+        list.add(d)
+        d = d.plusDays(1)
+    }
+    return list
 }
 
 @Composable
@@ -65,6 +72,8 @@ fun ScheduleScreen(
     val scope = rememberCoroutineScope()
     var showDatePicker by remember { mutableStateOf(false) }
     var lastHomeResetToken by rememberSaveable { mutableIntStateOf(homeResetToken) }
+    val scheduleStart = state.matchDates.minOrNull() ?: FALLBACK_SCHED_START
+    val scheduleEnd = state.matchDates.maxOrNull() ?: FALLBACK_SCHED_END
 
     LaunchedEffect(homeResetToken) {
         if (homeResetToken != lastHomeResetToken) {
@@ -80,7 +89,7 @@ fun ScheduleScreen(
             onPendingConsumed()
             val groupIdx = state.dateGroups.indexOfFirst { it.date >= pendingDate }
             if (groupIdx >= 0) contentListState.scrollToItem(groupIdx)
-            val chipIdx = ChronoUnit.DAYS.between(SCHED_START, pendingDate).toInt()
+            val chipIdx = ChronoUnit.DAYS.between(scheduleStart, pendingDate).toInt()
             if (chipIdx >= 0) chipListState.scrollToItem(maxOf(0, chipIdx - 2))
         }
     }
@@ -90,7 +99,7 @@ fun ScheduleScreen(
         if (!state.isLoading && state.dateGroups.isNotEmpty()) {
             val groupIdx = state.dateGroups.indexOfFirst { it.date == state.selectedDate }
             if (groupIdx >= 0) contentListState.scrollToItem(groupIdx)
-            val chipIdx = ChronoUnit.DAYS.between(SCHED_START, state.selectedDate).toInt()
+            val chipIdx = ChronoUnit.DAYS.between(scheduleStart, state.selectedDate).toInt()
             if (chipIdx >= 0) chipListState.scrollToItem(maxOf(0, chipIdx - 2))
         }
     }
@@ -101,7 +110,7 @@ fun ScheduleScreen(
         val group = state.dateGroups.getOrNull(contentListState.firstVisibleItemIndex)
             ?: return@LaunchedEffect
         vm.selectDate(group.date)
-        val chipIdx = ChronoUnit.DAYS.between(SCHED_START, group.date).toInt().coerceAtLeast(0)
+        val chipIdx = ChronoUnit.DAYS.between(scheduleStart, group.date).toInt().coerceAtLeast(0)
         chipListState.animateScrollToItem(maxOf(0, chipIdx - 2))
     }
 
@@ -113,12 +122,14 @@ fun ScheduleScreen(
             )
             DateBar(
                 matchDates = state.matchDates,
+                scheduleStart = scheduleStart,
+                scheduleEnd = scheduleEnd,
                 selectedDate = state.selectedDate,
                 chipListState = chipListState,
                 onChipClick = { date ->
                     vm.selectDate(date)
                     scope.launch {
-                        val chipIdx = ChronoUnit.DAYS.between(SCHED_START, date).toInt()
+                        val chipIdx = ChronoUnit.DAYS.between(scheduleStart, date).toInt()
                         if (chipIdx >= 0) chipListState.animateScrollToItem(maxOf(0, chipIdx - 2))
                         val groupIdx = state.dateGroups.indexOfFirst { it.date >= date }
                         if (groupIdx >= 0) contentListState.animateScrollToItem(groupIdx)
@@ -142,6 +153,8 @@ fun ScheduleScreen(
         if (showDatePicker) {
             DatePickerSheet(
                 matchDates = state.matchDates,
+                scheduleStart = scheduleStart,
+                scheduleEnd = scheduleEnd,
                 selectedDate = state.selectedDate,
                 onDateSelected = { date ->
                     showDatePicker = false
@@ -149,7 +162,7 @@ fun ScheduleScreen(
                     scope.launch {
                         val groupIdx = state.dateGroups.indexOfFirst { it.date >= date }
                         if (groupIdx >= 0) contentListState.animateScrollToItem(groupIdx)
-                        val chipIdx = ChronoUnit.DAYS.between(SCHED_START, date).toInt()
+                        val chipIdx = ChronoUnit.DAYS.between(scheduleStart, date).toInt()
                         if (chipIdx >= 0) chipListState.animateScrollToItem(maxOf(0, chipIdx - 2))
                     }
                 },
@@ -232,6 +245,8 @@ private fun DatePickerButton(selectedDate: LocalDate, onClick: () -> Unit) {
 @Composable
 private fun DateBar(
     matchDates: Set<LocalDate>,
+    scheduleStart: LocalDate,
+    scheduleEnd: LocalDate,
     selectedDate: LocalDate,
     chipListState: LazyListState,
     onChipClick: (LocalDate) -> Unit
@@ -273,7 +288,7 @@ private fun DateBar(
             contentPadding = PaddingValues(start = 16.dp, end = 8.dp, top = 4.dp, bottom = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(ALL_SCHED_DATES, key = { it.toString() }) { date ->
+            items(scheduleDates(scheduleStart, scheduleEnd), key = { it.toString() }) { date ->
                 DateChip(
                     date = date,
                     isSelected = date == selectedDate,
@@ -594,13 +609,8 @@ private fun MatchFlag(flagFile: String?) {
 private fun MatchCenterBlock(match: Match, modifier: Modifier) {
     val isLive = match.status == "live"
     val isFt = match.status == "ft"
-    // Format date "2026-06-12" → "JUN 12"
-    val dateLabel = remember(match.date) {
-        runCatching {
-            val d = LocalDate.parse(match.date)
-            "${d.month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.US).uppercase()} ${d.dayOfMonth}"
-        }.getOrElse { "" }
-    }
+    val timeLabel = remember(match.date, match.time) { match.localKickoffTimeLabel() }
+    val dateLabel = remember(match.date, match.time) { match.localKickoffDateLabel() }
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -640,7 +650,7 @@ private fun MatchCenterBlock(match: Match, modifier: Modifier) {
             // Time in a fixed-height box matching flag height (32dp) → aligns with flag center
             Box(modifier = Modifier.height(32.dp), contentAlignment = Alignment.Center) {
                 Text(
-                    text = match.time,
+                    text = timeLabel,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Label1,
@@ -685,16 +695,8 @@ private fun CalButton(match: Match, team1: Team?, team2: Team?, venue: Venue?) {
     if (showDialog) {
         val title = "${team1?.name ?: "TBD"} vs ${team2?.name ?: "TBD"}"
         val locationStr = "${venue?.name ?: ""}, ${venue?.city ?: ""}"
-        val dateObj = runCatching { LocalDate.parse(match.date) }.getOrNull()
-        val timeParts = match.time.split(":")
-        val hour = timeParts.getOrNull(0)?.toIntOrNull() ?: 12
-        val minute = timeParts.getOrNull(1)?.toIntOrNull() ?: 0
-        val startMs = if (dateObj != null) {
-            java.util.Calendar.getInstance().apply {
-                set(dateObj.year, dateObj.monthValue - 1, dateObj.dayOfMonth, hour, minute, 0)
-                set(java.util.Calendar.MILLISECOND, 0)
-            }.timeInMillis
-        } else 0L
+        val startMs = match.kickoffInstant()?.toEpochMilli() ?: 0L
+        val googleRange = match.googleCalendarUtcRange()
 
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -782,12 +784,7 @@ private fun CalButton(match: Match, team1: Team?, team2: Team?, venue: Venue?) {
                             .fillMaxWidth()
                             .clickable {
                                 showDialog = false
-                                if (dateObj != null) {
-                                    val startDateStr = "%04d%02d%02dT%02d%02d00Z".format(
-                                        dateObj.year, dateObj.monthValue, dateObj.dayOfMonth, hour, minute)
-                                    val endHour = (hour + 2) % 24
-                                    val endDateStr = "%04d%02d%02dT%02d%02d00Z".format(
-                                        dateObj.year, dateObj.monthValue, dateObj.dayOfMonth, endHour, minute)
+                                googleRange?.let { (startDateStr, endDateStr) ->
                                     val url = "https://www.google.com/calendar/render?action=TEMPLATE" +
                                         "&text=${Uri.encode(title)}" +
                                         "&dates=$startDateStr/$endDateStr" +
@@ -843,6 +840,8 @@ private fun CalButton(match: Match, team1: Team?, team2: Team?, venue: Venue?) {
 @Composable
 private fun DatePickerSheet(
     matchDates: Set<LocalDate>,
+    scheduleStart: LocalDate,
+    scheduleEnd: LocalDate,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     onDismiss: () -> Unit
@@ -911,9 +910,27 @@ private fun DatePickerSheet(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 16.dp, vertical = 4.dp)
                 ) {
-                    CalendarMonth(2026, Month.JUNE, matchDates, selectedDate, onDateSelected)
-                    Spacer(Modifier.height(20.dp))
-                    CalendarMonth(2026, Month.JULY, matchDates, selectedDate, onDateSelected)
+                    val months = remember(scheduleStart, scheduleEnd) {
+                        val result = mutableListOf<YearMonth>()
+                        var month = YearMonth.from(scheduleStart)
+                        val lastMonth = YearMonth.from(scheduleEnd)
+                        while (!month.isAfter(lastMonth)) {
+                            result.add(month)
+                            month = month.plusMonths(1)
+                        }
+                        result
+                    }
+                    months.forEachIndexed { index, yearMonth ->
+                        if (index > 0) Spacer(Modifier.height(20.dp))
+                        CalendarMonth(
+                            yearMonth = yearMonth,
+                            matchDates = matchDates,
+                            scheduleStart = scheduleStart,
+                            scheduleEnd = scheduleEnd,
+                            selectedDate = selectedDate,
+                            onDateSelected = onDateSelected
+                        )
+                    }
                     Spacer(Modifier.height(8.dp))
                 }
             }
@@ -923,19 +940,21 @@ private fun DatePickerSheet(
 
 @Composable
 private fun CalendarMonth(
-    year: Int,
-    month: Month,
+    yearMonth: YearMonth,
     matchDates: Set<LocalDate>,
+    scheduleStart: LocalDate,
+    scheduleEnd: LocalDate,
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit
 ) {
-    val firstDay = LocalDate.of(year, month, 1)
+    val firstDay = yearMonth.atDay(1)
+    val month = yearMonth.month
     val daysInMonth = firstDay.lengthOfMonth()
     val firstDow = firstDay.dayOfWeek.value % 7  // Sun=0 … Sat=6
 
     Column {
         Text(
-            text = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " $year",
+            text = month.getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " ${yearMonth.year}",
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             color = Label1,
@@ -959,8 +978,8 @@ private fun CalendarMonth(
                     if (dayNum < 1 || dayNum > daysInMonth) {
                         Spacer(Modifier.weight(1f).height(36.dp))
                     } else {
-                        val date = LocalDate.of(year, month, dayNum)
-                        val inTournament = !date.isBefore(SCHED_START) && !date.isAfter(SCHED_END)
+                        val date = yearMonth.atDay(dayNum)
+                        val inTournament = !date.isBefore(scheduleStart) && !date.isAfter(scheduleEnd)
                         CalendarDay(
                             day = dayNum,
                             inTournament = inTournament,

@@ -34,7 +34,7 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = rootProject.file("fifa-release.jks")
+            storeFile = rootProject.file(signingValue("FIFA_STORE_FILE") ?: "fifa-release.jks")
             storePassword = signingValue("FIFA_STORE_PASSWORD")
             keyAlias = signingValue("FIFA_KEY_ALIAS")
             keyPassword = signingValue("FIFA_KEY_PASSWORD")

@@ -357,7 +357,7 @@ private fun UpcomingMatchesSection(matches: List<Match>, teams: List<Team>, onCa
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(matches, key = { it.id }) { m ->
-                TodayMatchCard(m, teams, onClick = { onCardClick(m.date) })
+                TodayMatchCard(m, teams, onClick = { onCardClick(m.localKickoffDate()?.toString() ?: m.date) })
             }
         }
         HorizontalDivider(thickness = 0.5.dp, color = Separator)
@@ -373,6 +373,7 @@ private fun TodayMatchCard(m: Match, teams: List<Team>, onClick: () -> Unit = {}
     val n2 = t2?.name ?: "TBD"
     val isLive = m.status == "live"
     val isFt   = m.status == "ft"
+    val localTime = remember(m.date, m.time) { m.localKickoffTimeLabel() }
     val stageName = when (m.stage) {
         "GS"    -> if (m.group.isNotEmpty()) "Group ${m.group}" else "Group Stage"
         "R32"   -> "R32"; "R16" -> "R16"
@@ -398,9 +399,9 @@ private fun TodayMatchCard(m: Match, teams: List<Team>, onClick: () -> Unit = {}
                         if (isLive) LiveDot()
                         Text(
                             text = when {
-                                isLive -> m.time.ifEmpty { "LIVE" }
+                                isLive -> localTime.ifEmpty { "LIVE" }
                                 isFt   -> "FT"
-                                else   -> m.time
+                                else   -> localTime
                             },
                             fontSize = 10.5.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -893,6 +894,8 @@ private fun KoMatchCard(m: Match, teams: List<Team>) {
 
     val isLive = m.status == "live"
     val isFt   = m.status == "ft"
+    val localTime = remember(m.date, m.time) { m.localKickoffTimeLabel() }
+    val localDate = remember(m.date, m.time) { m.localKickoffDateLabel().lowercase().replaceFirstChar { it.uppercase() } }
 
     val homeScore = m.homeScore ?: 0
     val awayScore = m.awayScore ?: 0
@@ -941,7 +944,7 @@ private fun KoMatchCard(m: Match, teams: List<Team>) {
                         text = when {
                             isLive -> "LIVE"
                             isFt   -> "Full Time"
-                            else   -> "${formatDate(m.date)}  ${m.time}"
+                            else   -> "$localDate  $localTime"
                         },
                         fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold,
                         color = when { isLive -> Red; isFt -> Gray; else -> Blue }
@@ -1016,13 +1019,13 @@ private fun KoMatchCard(m: Match, teams: List<Team>) {
                         }
                         else -> Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
-                                m.time, fontSize = 20.sp,
+                                localTime, fontSize = 20.sp,
                                 fontWeight = FontWeight.SemiBold, letterSpacing = (-0.5).sp,
                                 color = Label1
                             )
                             if (m.date.isNotEmpty()) {
                                 Text(
-                                    formatDate(m.date),
+                                    localDate,
                                     fontSize = 10.sp, color = Label3
                                 )
                             }
@@ -1094,9 +1097,10 @@ private fun KoTeamColumn(
 private fun computeUpcomingMatches(matches: List<Match>): List<Match> {
     val upcoming = matches
         .filter { it.status == "upcoming" && it.date.isNotEmpty() }
-        .sortedWith(compareBy({ it.date }, { it.time }))
+        .sortedWith(compareBy({ it.kickoffInstant() }, { it.id }))
     val first = upcoming.firstOrNull() ?: return emptyList()
-    return upcoming.filter { it.date == first.date }.take(5)
+    val firstDate = first.localKickoffDate() ?: return upcoming.take(5)
+    return upcoming.filter { it.localKickoffDate() == firstDate }.take(5)
 }
 
 
