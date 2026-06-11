@@ -1,6 +1,6 @@
 ﻿"Match #","Stage","Matchday","Group","Date (Local Venue)","Time (Local)","Timezone (Local)","Time (EDT Broadcast)","Team / Path A","Team / Path B","Qualification Rule (Full)","Venue","Notes","球队1得分","球队2得分","加时赛点球球队1得分","加时赛点球球队2得分"
 "M001","Group Stage","1","A","2026/6/11","14:00","CDT (UTC-5)","15:00 EDT","Mexico","South Africa","Group A, Matchday 1","Estadio Azteca, Mexico City","Opening match of tournament","","","",""
-"M002","Group Stage","1","A","2026/6/11","20:00","CDT (UTC-5)","21:00 EDT","South Korea","Czechia","Group A, Matchday 1","NRG Stadium, Houston","","","","",""
+"M002","Group Stage","1","A","2026/6/11","20:00","CST (UTC-6)","22:00 EDT","South Korea","Czechia","Group A, Matchday 1","Estadio Akron, Guadalajara","","","","",""
 "M003","Group Stage","1","B","2026/6/12","15:00","EDT (UTC-4)","15:00 EDT","Canada","Bosnia & Herzegovina","Group B, Matchday 1","Hard Rock Stadium, Miami","","","","",""
 "M004","Group Stage","1","D","2026/6/12","18:00","PDT (UTC-7)","21:00 EDT","USA","Paraguay","Group D, Matchday 1","SoFi Stadium, Los Angeles","","","","",""
 "M005","Group Stage","1","D","2026/6/12","21:00","PDT (UTC-7)","00:00 EDT","Australia","T��rkiye","Group D, Matchday 1","BC Place, Vancouver","00:00 EDT = 21:00 PDT Jun 12","","","",""
