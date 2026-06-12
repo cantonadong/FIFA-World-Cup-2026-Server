@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-private val MatchSourceZone: ZoneId = ZoneId.of("America/New_York")
+private val MatchSourceZone: ZoneId = ZoneId.of("Pacific/Auckland")
 private val TimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 private val GoogleUtcFormatter: DateTimeFormatter =
     DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'").withZone(ZoneId.of("UTC"))
