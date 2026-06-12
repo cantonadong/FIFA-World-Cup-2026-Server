@@ -29,14 +29,14 @@
     {
         "id":  "V05",
         "name":  "BC Place",
-        "fifaName":  "Vancouver Stadium",
+        "fifaName":  "BC Place Vancouver",
         "city":  "Vancouver",
         "country":  "Canada"
     },
     {
         "id":  "V06",
         "name":  "MetLife Stadium",
-        "fifaName":  "New York New Jersey Stadium",
+        "fifaName":  "New York/New Jersey Stadium",
         "city":  "East Rutherford",
         "country":  "USA"
     },
