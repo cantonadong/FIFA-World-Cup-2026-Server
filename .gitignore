@@ -1,6 +1,14 @@
 node_modules/
 dist/
 build/
+.gradle/
+.android-sdk/
+.tmp-server-main/
+local.properties
+.cxx/
+.externalNativeBuild/
+*.apk
+*.aab
 .next/
 .vercel/
 .env

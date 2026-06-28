@@ -9,6 +9,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.Normalizer
@@ -44,6 +45,8 @@ private object AssetDataCache {
 
 class DefaultDataRepository(private val context: Context) : DataRepository {
     private val json = Json { ignoreUnknownKeys = true; coerceInputValues = true }
+    private val matchCacheFile: File
+        get() = File(context.filesDir, "match_results_cache.json")
 
     private suspend fun readAsset(filename: String): String = withContext(Dispatchers.IO) {
         context.assets.open("data/$filename").bufferedReader().use { it.readText() }
@@ -62,7 +65,10 @@ class DefaultDataRepository(private val context: Context) : DataRepository {
 
     override suspend fun getMatches(): List<Match> {
         MatchSyncState.remoteMatches?.let { return it }
-        return getLocalMatches()
+        val matches = getCachedMatches() ?: getLocalMatches()
+        val teams = getTeams()
+        val standings = getGroupStandings(teams, matches)
+        return resolveKnockoutTeams(matches, teams, standings)
     }
 
     override suspend fun getVenues(): List<Venue> {
@@ -79,10 +85,45 @@ class DefaultDataRepository(private val context: Context) : DataRepository {
         }
         val csv = fetchText(url)
         val teams = getTeams()
-        val baseMatches = getLocalMatches()
+        val baseMatches = getCachedMatches() ?: getLocalMatches()
         val parsed = applyResultsCsv(csv, baseMatches, teams)
         val standings = getGroupStandings(teams, parsed)
-        MatchSyncState.publish(resolveKnockoutTeams(parsed, teams, standings))
+        val resolved = resolveKnockoutTeams(parsed, teams, standings)
+        if (resolved != baseMatches) {
+            saveCachedMatches(resolved)
+            MatchSyncState.publish(resolved)
+        } else if (MatchSyncState.remoteMatches == null) {
+            MatchSyncState.publish(resolved)
+        }
+    }
+
+    private suspend fun getCachedMatches(): List<Match>? = withContext(Dispatchers.IO) {
+        val file = matchCacheFile
+        if (!file.exists()) return@withContext null
+        runCatching {
+            json.decodeFromString<List<Match>>(file.readText(Charsets.UTF_8))
+                .takeIf { it.isNotEmpty() }
+        }.getOrNull()
+    }?.let { cached ->
+        val cachedById = cached.associateBy { it.id }
+        getLocalMatches().map { base ->
+            val cachedMatch = cachedById[base.id] ?: return@map base
+            if (base.stage != "GS" && (isKnockoutPathLabel(base.team1Name) || isKnockoutPathLabel(base.team2Name))) {
+                base.copy(
+                    status = cachedMatch.status,
+                    homeScore = cachedMatch.homeScore,
+                    awayScore = cachedMatch.awayScore,
+                    penaltyHomeScore = cachedMatch.penaltyHomeScore,
+                    penaltyAwayScore = cachedMatch.penaltyAwayScore
+                )
+            } else {
+                cachedMatch
+            }
+        }
+    }
+
+    private suspend fun saveCachedMatches(matches: List<Match>) = withContext(Dispatchers.IO) {
+        matchCacheFile.writeText(json.encodeToString(matches), Charsets.UTF_8)
     }
 
     private suspend fun fetchText(url: String): String = withContext(Dispatchers.IO) {
@@ -691,11 +732,13 @@ class DefaultDataRepository(private val context: Context) : DataRepository {
             val team2Name = cells.value("team2")
             val team1 = findTeam(team1Name, teams)
             val team2 = findTeam(team2Name, teams)
+            val keepBaseTeam1 = base.stage != "GS" && isKnockoutPathLabel(base.team1Name)
+            val keepBaseTeam2 = base.stage != "GS" && isKnockoutPathLabel(base.team2Name)
             base.copy(
-                team1Id = team1?.id ?: base.team1Id,
-                team1Name = team1?.name ?: team1Name.ifEmpty { base.team1Name },
-                team2Id = team2?.id ?: base.team2Id,
-                team2Name = team2?.name ?: team2Name.ifEmpty { base.team2Name },
+                team1Id = if (keepBaseTeam1) base.team1Id else team1?.id ?: base.team1Id,
+                team1Name = if (keepBaseTeam1) base.team1Name else team1?.name ?: team1Name.ifEmpty { base.team1Name },
+                team2Id = if (keepBaseTeam2) base.team2Id else team2?.id ?: base.team2Id,
+                team2Name = if (keepBaseTeam2) base.team2Name else team2?.name ?: team2Name.ifEmpty { base.team2Name },
                 status = matchStatus(score1, score2),
                 homeScore = score1,
                 awayScore = score2,
@@ -842,13 +885,11 @@ class DefaultDataRepository(private val context: Context) : DataRepository {
             if (group.uppercase() !in completedGroups) return null
             return standings[group.uppercase()]?.getOrNull(1)?.team
         }
-        Regex("(?i)^\\s*1([A-L])\\s*$").find(text)?.groupValues?.getOrNull(1)?.let { group ->
+        Regex("(?i)^\\s*([1-4])([A-L])\\s*$").find(text)?.groupValues?.let { values ->
+            val rank = values[1].toInt()
+            val group = values[2].uppercase()
             if (group.uppercase() !in completedGroups) return null
-            return standings[group.uppercase()]?.getOrNull(0)?.team
-        }
-        Regex("(?i)^\\s*2([A-L])\\s*$").find(text)?.groupValues?.getOrNull(1)?.let { group ->
-            if (group.uppercase() !in completedGroups) return null
-            return standings[group.uppercase()]?.getOrNull(1)?.team
+            return standings[group]?.getOrNull(rank - 1)?.team
         }
         Regex("(?i)best\\s+3rd.*groups?\\s+(.+)").find(text)?.groupValues?.getOrNull(1)?.let { groupsText ->
             val allowed = Regex("[A-L]").findAll(groupsText.uppercase()).map { it.value }.toSet()
@@ -857,10 +898,33 @@ class DefaultDataRepository(private val context: Context) : DataRepository {
         Regex("(?i)winner\\s+of\\s+\\[?match\\s*(\\d+)\\]?").find(text)?.groupValues?.getOrNull(1)?.let { num ->
             return winnerOfMatch(resolvedMatches["M${num.padStart(3, '0')}"])
         }
+        Regex("(?i)^\\s*winner\\s+M(\\d{3})\\s*$").find(text)?.groupValues?.getOrNull(1)?.let { num ->
+            return winnerOfMatch(resolvedMatches["M$num"])
+        }
+        Regex("(?i)^\\s*loser\\s+M(\\d{3})\\s*$").find(text)?.groupValues?.getOrNull(1)?.let { num ->
+            return loserOfMatch(resolvedMatches["M$num"])
+        }
         return null
     }
 
+    private fun isKnockoutPathLabel(label: String): Boolean {
+        val text = label.trim()
+        return Regex("(?i)^\\s*[1-4][A-L]\\s*$").matches(text) ||
+            Regex("(?i)^(winner|loser)\\s+M\\d{3}$").matches(text) ||
+            Regex("(?i)^(winner|loser)\\s+of\\s+\\[?match\\s*\\d+\\]?$").matches(text) ||
+            Regex("(?i)^(winner|runner[- ]up)\\s+group\\s+[A-L]$").matches(text) ||
+            Regex("(?i)^best\\s+3rd").containsMatchIn(text)
+    }
+
     private fun winnerOfMatch(match: Match?): Team? {
+        return resultTeam(match, winner = true)
+    }
+
+    private fun loserOfMatch(match: Match?): Team? {
+        return resultTeam(match, winner = false)
+    }
+
+    private fun resultTeam(match: Match?, winner: Boolean): Team? {
         if (match == null || match.status != "ft") return null
         val hs = match.homeScore ?: return null
         val as_ = match.awayScore ?: return null
@@ -871,8 +935,9 @@ class DefaultDataRepository(private val context: Context) : DataRepository {
                 match.penaltyHomeScore > match.penaltyAwayScore
             else -> return null
         }
-        val teamId = if (homeWins) match.team1Id else match.team2Id
-        val teamName = if (homeWins) match.team1Name else match.team2Name
+        val useHome = if (winner) homeWins else !homeWins
+        val teamId = if (useHome) match.team1Id else match.team2Id
+        val teamName = if (useHome) match.team1Name else match.team2Name
         return Team(
             id = teamId,
             name = teamName,

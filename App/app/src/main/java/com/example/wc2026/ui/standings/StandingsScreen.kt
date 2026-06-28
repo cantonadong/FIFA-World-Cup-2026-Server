@@ -232,6 +232,9 @@ private fun GroupStageContent(state: StandingsUiState, onTeamClick: (String) -> 
     val upcomingMatches = remember(state.matches) { computeUpcomingMatches(state.matches) }
     val hasUpcomingSection = upcomingMatches.isNotEmpty()
     val todayOffset = if (hasUpcomingSection) 1 else 0
+    val qualifiedTeamIds = remember(state.groupStandings, state.matches) {
+        computeQualifiedTeamIds(state.groupStandings, state.matches)
+    }
 
     var selectedGroup by rememberSaveable(groups) { mutableStateOf(groups.firstOrNull() ?: "") }
 
@@ -292,7 +295,11 @@ private fun GroupStageContent(state: StandingsUiState, onTeamClick: (String) -> 
                     GroupSectionHeader(group = grp, groupMatches = groupMatches)
                 }
                 item(key = "tbl_$grp") {
-                    GroupTable(standings = standings, onTeamClick = onTeamClick)
+                    GroupTable(
+                        standings = standings,
+                        qualifiedTeamIds = qualifiedTeamIds,
+                        onTeamClick = onTeamClick
+                    )
                     GroupLegend()
                     if (gi < groups.size - 1) {
                         Spacer(
@@ -533,7 +540,11 @@ private fun GroupSectionHeader(group: String, groupMatches: List<Match>) {
 }
 
 @Composable
-private fun GroupTable(standings: List<TeamStanding>, onTeamClick: (String) -> Unit) {
+private fun GroupTable(
+    standings: List<TeamStanding>,
+    qualifiedTeamIds: Set<String>,
+    onTeamClick: (String) -> Unit
+) {
     Surface(
         modifier = Modifier.padding(horizontal = 14.dp),
         shape = RoundedCornerShape(16.dp),
@@ -570,7 +581,12 @@ private fun GroupTable(standings: List<TeamStanding>, onTeamClick: (String) -> U
             }
             HorizontalDivider(thickness = 0.5.dp, color = Separator)
             standings.forEachIndexed { idx, s ->
-                GroupTeamRow(pos = idx + 1, s = s, onTeamClick = onTeamClick)
+                GroupTeamRow(
+                    pos = idx + 1,
+                    s = s,
+                    qualifies = s.team.id in qualifiedTeamIds,
+                    onTeamClick = onTeamClick
+                )
                 if (idx < standings.lastIndex) {
                     HorizontalDivider(thickness = 0.5.dp, color = Separator)
                 }
@@ -596,10 +612,15 @@ private fun HeaderCell(
 }
 
 @Composable
-private fun GroupTeamRow(pos: Int, s: TeamStanding, onTeamClick: (String) -> Unit) {
+private fun GroupTeamRow(
+    pos: Int,
+    s: TeamStanding,
+    qualifies: Boolean,
+    onTeamClick: (String) -> Unit
+) {
     val isWithdrawn = s.team.isWithdrawn
-    val qualifies = pos <= 2 && !isWithdrawn
-    val rowBg = if (qualifies) Green.copy(alpha = 0.04f) else Color.Transparent
+    val showQualified = qualifies && !isWithdrawn
+    val rowBg = if (showQualified) Green.copy(alpha = 0.04f) else Color.Transparent
 
     Row(
         Modifier
@@ -610,7 +631,7 @@ private fun GroupTeamRow(pos: Int, s: TeamStanding, onTeamClick: (String) -> Uni
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Qualify indicator bar
-        if (qualifies) {
+        if (showQualified) {
             Box(
                 Modifier.width(3.dp).height(34.dp)
                     .clip(RoundedCornerShape(2.dp)).background(Green)
@@ -724,9 +745,36 @@ private fun GroupLegend() {
                 Modifier.width(3.dp).height(11.dp)
                     .clip(RoundedCornerShape(2.dp)).background(Green)
             )
-            Text("Qualify to Round of 32", fontSize = 10.5.sp, color = Label3)
+            Text("Top 2 + best eight 3rd-place teams qualify", fontSize = 10.5.sp, color = Label3)
         }
     }
+}
+
+private fun computeQualifiedTeamIds(
+    groupStandings: Map<String, List<TeamStanding>>,
+    matches: List<Match>
+): Set<String> {
+    val directQualifiers = groupStandings.values
+        .flatMap { standings -> standings.take(2) }
+        .map { it.team.id }
+
+    val groupMatches = matches.filter { it.stage == "GS" }
+    val groupStageComplete = groupMatches.isNotEmpty() &&
+        groupMatches.all { it.homeScore != null && it.awayScore != null }
+    if (!groupStageComplete) return directQualifiers.toSet()
+
+    val bestThirds = groupStandings.values
+        .mapNotNull { standings -> standings.getOrNull(2) }
+        .sortedWith(
+            compareByDescending<TeamStanding> { it.points }
+                .thenByDescending { it.goalDiff }
+                .thenByDescending { it.goalsFor }
+                .thenBy { it.team.fifaRank }
+        )
+        .take(8)
+        .map { it.team.id }
+
+    return (directQualifiers + bestThirds).toSet()
 }
 
 // ─── Knockout Stage Content ───────────────────────────────────────────────────

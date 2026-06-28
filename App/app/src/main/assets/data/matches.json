@@ -12,10 +12,12 @@
     "team2Id": "T04",
     "team2Name": "South Africa",
     "venueId": "V01",
-    "status": "ft",
-    "homeScore": 2,
-    "awayScore": 0,
-    "notes": "Opening match of tournament"
+    "status": "upcoming",
+    "homeScore": null,
+    "awayScore": null,
+    "notes": "Opening match of tournament",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M002",
@@ -30,10 +32,12 @@
     "team2Id": "T03",
     "team2Name": "Czech",
     "venueId": "V02",
-    "status": "ft",
-    "homeScore": 2,
-    "awayScore": 1,
-    "notes": ""
+    "status": "upcoming",
+    "homeScore": null,
+    "awayScore": null,
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M003",
@@ -51,7 +55,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M004",
@@ -69,7 +75,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M005",
@@ -87,7 +95,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M006",
@@ -105,7 +115,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M007",
@@ -123,7 +135,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M008",
@@ -141,7 +155,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M009",
@@ -159,7 +175,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M010",
@@ -177,7 +195,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M011",
@@ -195,7 +215,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M012",
@@ -213,7 +235,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M013",
@@ -231,7 +255,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M014",
@@ -249,7 +275,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M015",
@@ -267,7 +295,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M016",
@@ -285,7 +315,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M017",
@@ -303,7 +335,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M018",
@@ -321,7 +355,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M019",
@@ -339,7 +375,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M020",
@@ -357,7 +395,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M021",
@@ -375,7 +415,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M022",
@@ -393,7 +435,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M023",
@@ -411,7 +455,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M024",
@@ -429,7 +475,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M025",
@@ -447,7 +495,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M026",
@@ -465,7 +515,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M027",
@@ -483,7 +535,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M028",
@@ -501,7 +555,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M029",
@@ -519,7 +575,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M030",
@@ -537,7 +595,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M031",
@@ -555,7 +615,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M032",
@@ -573,7 +635,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M033",
@@ -591,7 +655,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M034",
@@ -609,7 +675,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M035",
@@ -627,7 +695,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M036",
@@ -645,7 +715,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M037",
@@ -663,7 +735,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M038",
@@ -681,7 +755,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M039",
@@ -699,7 +775,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M040",
@@ -717,7 +795,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M041",
@@ -735,7 +815,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M042",
@@ -753,7 +835,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M043",
@@ -771,7 +855,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M044",
@@ -789,7 +875,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M045",
@@ -807,7 +895,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M046",
@@ -825,7 +915,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M047",
@@ -843,7 +935,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M048",
@@ -861,7 +955,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M049",
@@ -879,7 +975,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M050",
@@ -897,7 +995,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M051",
@@ -915,7 +1015,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M052",
@@ -933,7 +1035,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M053",
@@ -951,7 +1055,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M054",
@@ -969,7 +1075,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M055",
@@ -987,7 +1095,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M056",
@@ -1005,7 +1115,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M057",
@@ -1023,7 +1135,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M058",
@@ -1041,7 +1155,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M059",
@@ -1059,7 +1175,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M060",
@@ -1077,7 +1195,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M061",
@@ -1095,7 +1215,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M062",
@@ -1113,7 +1235,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M063",
@@ -1131,7 +1255,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M064",
@@ -1149,7 +1275,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M065",
@@ -1167,7 +1295,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M066",
@@ -1185,7 +1315,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M067",
@@ -1203,7 +1335,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M068",
@@ -1221,7 +1355,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M069",
@@ -1239,7 +1375,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M070",
@@ -1257,7 +1395,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M071",
@@ -1275,7 +1415,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M072",
@@ -1293,7 +1435,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M073",
@@ -1303,15 +1447,17 @@
     "matchday": null,
     "date": "2026-06-29",
     "time": "07:00",
-    "team1Id": "2A",
-    "team1Name": "Runner-up Group A",
-    "team2Id": "2B",
-    "team2Name": "Runner-up Group B",
+    "team1Id": "",
+    "team1Name": "2A",
+    "team2Id": "",
+    "team2Name": "2B",
     "venueId": "V08",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M074",
@@ -1321,15 +1467,17 @@
     "matchday": null,
     "date": "2026-06-30",
     "time": "08:30",
-    "team1Id": "1E",
-    "team1Name": "Winner Group E",
-    "team2Id": "3ABCDF",
-    "team2Name": "Best 3rd from Groups A/B/C/D/F",
+    "team1Id": "",
+    "team1Name": "1E",
+    "team2Id": "",
+    "team2Name": "3D",
     "venueId": "V12",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M075",
@@ -1339,15 +1487,17 @@
     "matchday": null,
     "date": "2026-06-30",
     "time": "13:00",
-    "team1Id": "1F",
-    "team1Name": "Winner Group F",
-    "team2Id": "2C",
-    "team2Name": "Runner-up Group C",
+    "team1Id": "",
+    "team1Name": "1F",
+    "team2Id": "",
+    "team2Name": "2C",
     "venueId": "V03",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M076",
@@ -1357,15 +1507,17 @@
     "matchday": null,
     "date": "2026-06-30",
     "time": "05:00",
-    "team1Id": "1C",
-    "team1Name": "Winner Group C",
-    "team2Id": "2F",
-    "team2Name": "Runner-up Group F",
+    "team1Id": "",
+    "team1Name": "1C",
+    "team2Id": "",
+    "team2Name": "2F",
     "venueId": "V10",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M077",
@@ -1375,15 +1527,17 @@
     "matchday": null,
     "date": "2026-07-01",
     "time": "09:00",
-    "team1Id": "1I",
-    "team1Name": "Winner Group I",
-    "team2Id": "3CDFGH",
-    "team2Name": "Best 3rd from Groups C/D/F/G/H",
+    "team1Id": "",
+    "team1Name": "1I",
+    "team2Id": "",
+    "team2Name": "3F",
     "venueId": "V06",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M078",
@@ -1393,15 +1547,17 @@
     "matchday": null,
     "date": "2026-07-01",
     "time": "05:00",
-    "team1Id": "2E",
-    "team1Name": "Runner-up Group E",
-    "team2Id": "2I",
-    "team2Name": "Runner-up Group I",
+    "team1Id": "",
+    "team1Name": "2E",
+    "team2Id": "",
+    "team2Name": "2I",
     "venueId": "V07",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M079",
@@ -1411,15 +1567,17 @@
     "matchday": null,
     "date": "2026-07-01",
     "time": "13:00",
-    "team1Id": "1A",
-    "team1Name": "Winner Group A",
-    "team2Id": "3CEFHI",
-    "team2Name": "Best 3rd from Groups C/E/F/H/I",
+    "team1Id": "",
+    "team1Name": "1A",
+    "team2Id": "",
+    "team2Name": "3E",
     "venueId": "V01",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M080",
@@ -1429,15 +1587,17 @@
     "matchday": null,
     "date": "2026-07-02",
     "time": "04:00",
-    "team1Id": "1L",
-    "team1Name": "Winner Group L",
-    "team2Id": "3EHIJK",
-    "team2Name": "Best 3rd from Groups E/H/I/J/K",
+    "team1Id": "",
+    "team1Name": "1L",
+    "team2Id": "",
+    "team2Name": "3K",
     "venueId": "V11",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M081",
@@ -1447,15 +1607,17 @@
     "matchday": null,
     "date": "2026-07-02",
     "time": "12:00",
-    "team1Id": "1D",
-    "team1Name": "Winner Group D",
-    "team2Id": "3BEFIJ",
-    "team2Name": "Best 3rd from Groups B/E/F/I/J",
+    "team1Id": "",
+    "team1Name": "1D",
+    "team2Id": "",
+    "team2Name": "3B",
     "venueId": "V14",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M082",
@@ -1465,15 +1627,17 @@
     "matchday": null,
     "date": "2026-07-02",
     "time": "08:00",
-    "team1Id": "1G",
-    "team1Name": "Winner Group G",
-    "team2Id": "3AEHIJ",
-    "team2Name": "Best 3rd from Groups A/E/H/I/J",
+    "team1Id": "",
+    "team1Name": "1G",
+    "team2Id": "",
+    "team2Name": "3I",
     "venueId": "V15",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M083",
@@ -1483,15 +1647,17 @@
     "matchday": null,
     "date": "2026-07-03",
     "time": "11:00",
-    "team1Id": "2K",
-    "team1Name": "Runner-up Group K",
-    "team2Id": "2L",
-    "team2Name": "Runner-up Group L",
+    "team1Id": "",
+    "team1Name": "2K",
+    "team2Id": "",
+    "team2Name": "2L",
     "venueId": "V04",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M084",
@@ -1501,15 +1667,17 @@
     "matchday": null,
     "date": "2026-07-03",
     "time": "07:00",
-    "team1Id": "1H",
-    "team1Name": "Winner Group H",
-    "team2Id": "2J",
-    "team2Name": "Runner-up Group J",
+    "team1Id": "",
+    "team1Name": "1H",
+    "team2Id": "",
+    "team2Name": "2J",
     "venueId": "V08",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M085",
@@ -1519,15 +1687,17 @@
     "matchday": null,
     "date": "2026-07-03",
     "time": "15:00",
-    "team1Id": "1B",
-    "team1Name": "Winner Group B",
-    "team2Id": "3EFGIJ",
-    "team2Name": "Best 3rd from Groups E/F/G/I/J",
+    "team1Id": "",
+    "team1Name": "1B",
+    "team2Id": "",
+    "team2Name": "3J",
     "venueId": "V05",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M086",
@@ -1537,15 +1707,17 @@
     "matchday": null,
     "date": "2026-07-04",
     "time": "10:00",
-    "team1Id": "1J",
-    "team1Name": "Winner Group J",
-    "team2Id": "2H",
-    "team2Name": "Runner-up Group H",
+    "team1Id": "",
+    "team1Name": "1J",
+    "team2Id": "",
+    "team2Name": "2H",
     "venueId": "V09",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M087",
@@ -1555,15 +1727,17 @@
     "matchday": null,
     "date": "2026-07-04",
     "time": "13:30",
-    "team1Id": "1K",
-    "team1Name": "Winner Group K",
-    "team2Id": "3DEIJL",
-    "team2Name": "Best 3rd from Groups D/E/I/J/L",
+    "team1Id": "",
+    "team1Name": "1K",
+    "team2Id": "",
+    "team2Name": "3L",
     "venueId": "V16",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M088",
@@ -1573,15 +1747,17 @@
     "matchday": null,
     "date": "2026-07-04",
     "time": "06:00",
-    "team1Id": "2D",
-    "team1Name": "Runner-up Group D",
-    "team2Id": "2G",
-    "team2Name": "Runner-up Group G",
+    "team1Id": "",
+    "team1Name": "2D",
+    "team2Id": "",
+    "team2Name": "2G",
     "venueId": "V07",
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M089",
@@ -1599,7 +1775,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M090",
@@ -1617,7 +1795,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M091",
@@ -1635,7 +1815,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M092",
@@ -1653,7 +1835,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M093",
@@ -1671,7 +1855,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M094",
@@ -1689,7 +1875,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M095",
@@ -1707,7 +1895,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M096",
@@ -1725,7 +1915,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M097",
@@ -1743,7 +1935,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M098",
@@ -1761,7 +1955,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M099",
@@ -1779,7 +1975,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M100",
@@ -1797,7 +1995,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M101",
@@ -1815,7 +2015,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M102",
@@ -1833,7 +2035,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M103",
@@ -1851,7 +2055,9 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": ""
+    "notes": "",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   },
   {
     "id": "M104",
@@ -1869,6 +2075,8 @@
     "status": "upcoming",
     "homeScore": null,
     "awayScore": null,
-    "notes": "FIFA World Cup 26 Final"
+    "notes": "FIFA World Cup 26 Final",
+    "penaltyHomeScore": null,
+    "penaltyAwayScore": null
   }
 ]

@@ -38,11 +38,13 @@ class StandingsViewModel(app: Application) : AndroidViewModel(app) {
             val matches = repo.getMatches()
             val venues = repo.getVenues()
             val standings = repo.getGroupStandings(teams, matches)
+            val selectedStage = if (matches.isGroupStageComplete()) "KO" else "GS"
             _state.value = StandingsUiState(
                 teams = teams,
                 matches = matches,
                 venues = venues,
                 groupStandings = standings,
+                selectedStage = selectedStage,
                 isLoading = false
             )
         } catch (e: Exception) {
@@ -62,6 +64,11 @@ class StandingsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun selectKoRound(round: String) {
         _state.update { it.copy(selectedKoRound = round) }
+    }
+
+    private fun List<Match>.isGroupStageComplete(): Boolean {
+        val groupMatches = filter { it.stage == "GS" }
+        return groupMatches.isNotEmpty() && groupMatches.all { it.homeScore != null && it.awayScore != null }
     }
 }
 

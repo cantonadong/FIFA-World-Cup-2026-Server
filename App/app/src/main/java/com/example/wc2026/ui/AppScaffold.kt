@@ -83,6 +83,9 @@ fun AppScaffold() {
     LaunchedEffect(refreshEnabled) {
         if (!refreshEnabled) pullDistance = 0f
     }
+    LaunchedEffect(Unit) {
+        startRefresh()
+    }
     val refreshConnection = remember(refreshThresholdPx, isRefreshing, refreshEnabled) {
         object : NestedScrollConnection {
             override fun onPostScroll(

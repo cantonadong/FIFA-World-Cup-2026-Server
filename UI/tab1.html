@@ -350,7 +350,7 @@ body{
 <script>
 // ─── CONFIG ───────────────────────────────────────
 // Change DEMO_DATE to simulate different tournament phases
-const DEMO_DATE       = new Date(2026, 5, 17); // June 17 → Group Stage
+const DEMO_DATE       = new Date(2026, 5, 29); // June 29, knockout stage
 // const DEMO_DATE    = new Date(2026, 6, 4);  // July 4  → Knockout Stage
 const KO_START        = new Date(2026, 5, 28); // June 28
 const isKO_Phase      = DEMO_DATE >= KO_START;
@@ -436,14 +436,24 @@ const GROUPS = {
 // ─── KNOCKOUT DATA ────────────────────────────────
 const KO_ROUNDS = [
   {
-    id:'R32', label:'R32', name:'Round of 32', dates:'Jun 28 – Jul 3',
+    id:'R32', label:'R32', name:'Round of 32', dates:'Jun 29 - Jul 4',
     matches:[
-      {h:{c:'ar',n:'Argentina',fifa:1},   a:{c:'sn',n:'Senegal',fifa:20},  hs:2, as:0, status:'ft'},
-      {h:{c:'fr',n:'France',fifa:2},      a:{c:'jp',n:'Japan',fifa:18},    hs:1, as:1, status:'ft', pen:'4-2', hwin:true},
-      {h:{c:'es',n:'Spain',fifa:8},       a:{c:'kr',n:'S. Korea',fifa:23}, hs:3, as:0, status:'ft'},
-      {h:{c:'gb-eng',n:'England',fifa:4}, a:{c:'ma',n:'Morocco',fifa:13},  status:'live', min:"67'", hs:1, as:0},
-      {h:{c:'br',n:'Brazil',fifa:5},      a:{c:'mx',n:'Mexico',fifa:15},   status:'upcoming', date:'Jun 29', time:'22:00'},
-      {h:{c:'de',n:'Germany',fifa:16},    a:{c:'uy',n:'Uruguay',fifa:17},  status:'upcoming', date:'Jun 30', time:'19:00'},
+      {h:{c:'za',n:'South Africa',fifa:60}, a:{c:'ca',n:'Canada',fifa:30}, status:'upcoming', date:'Jun 29', time:'07:00'},
+      {h:{c:'br',n:'Brazil',fifa:6}, a:{c:'jp',n:'Japan',fifa:17}, status:'upcoming', date:'Jun 30', time:'05:00'},
+      {h:{c:'de',n:'Germany',fifa:10}, a:{c:'py',n:'Paraguay',fifa:64}, status:'upcoming', date:'Jun 30', time:'08:30'},
+      {h:{c:'nl',n:'Netherlands',fifa:7}, a:{c:'ma',n:'Morocco',fifa:8}, status:'upcoming', date:'Jun 30', time:'13:00'},
+      {h:{c:'ci',n:'Ivory Coast',fifa:33}, a:{c:'no',n:'Norway',fifa:44}, status:'upcoming', date:'Jul 1', time:'05:00'},
+      {h:{c:'fr',n:'France',fifa:1}, a:{c:'se',n:'Sweden',fifa:39}, status:'upcoming', date:'Jul 1', time:'09:00'},
+      {h:{c:'mx',n:'Mexico',fifa:15}, a:{c:'ec',n:'Ecuador',fifa:28}, status:'upcoming', date:'Jul 1', time:'13:00'},
+      {h:{c:'gb-eng',n:'England',fifa:4}, a:{c:'cd',n:'DR Congo',fifa:51}, status:'upcoming', date:'Jul 2', time:'04:00'},
+      {h:{c:'be',n:'Belgium',fifa:9}, a:{c:'sn',n:'Senegal',fifa:21}, status:'upcoming', date:'Jul 2', time:'08:00'},
+      {h:{c:'us',n:'USA',fifa:16}, a:{c:'ba',n:'Bosnia & Herzegovina',fifa:65}, status:'upcoming', date:'Jul 2', time:'12:00'},
+      {h:{c:'es',n:'Spain',fifa:2}, a:{c:'at',n:'Austria',fifa:23}, status:'upcoming', date:'Jul 3', time:'07:00'},
+      {h:{c:'pt',n:'Portugal',fifa:5}, a:{c:'hr',n:'Croatia',fifa:11}, status:'upcoming', date:'Jul 3', time:'11:00'},
+      {h:{c:'ch',n:'Switzerland',fifa:14}, a:{c:'dz',n:'Algeria',fifa:36}, status:'upcoming', date:'Jul 3', time:'15:00'},
+      {h:{c:'au',n:'Australia',fifa:24}, a:{c:'eg',n:'Egypt',fifa:29}, status:'upcoming', date:'Jul 4', time:'06:00'},
+      {h:{c:'ar',n:'Argentina',fifa:3}, a:{c:'cv',n:'Cape Verde',fifa:70}, status:'upcoming', date:'Jul 4', time:'10:00'},
+      {h:{c:'co',n:'Colombia',fifa:15}, a:{c:'gh',n:'Ghana',fifa:65}, status:'upcoming', date:'Jul 4', time:'13:30'},
     ]
   },
   {
