@@ -1,6 +1,4 @@
 "match_id","team1","team2","score1","score2","penalty1","penalty2"
-"M097","France","Morocco","2","0","",""
-"M098","Spain","Belgium","2","1","",""
 "M099","Norway","England","","","",""
 "M100","Argentina","Colombia","","","",""
 "M101","France","Spain","","","",""
@@ -104,3 +102,5 @@
 "M094","USA","Belgium","1","4","",""
 "M095","Argentina","Egypt","3","2","",""
 "M096","Switzerland","Colombia","0","0","4","3"
+"M097","France","Morocco","2","0","",""
+"M098","Spain","Belgium","2","1","",""
