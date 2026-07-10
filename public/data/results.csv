@@ -4,7 +4,7 @@
 "M099","Norway","England","","","",""
 "M100","Argentina","Colombia","","","",""
 "M101","France","Spain","","","",""
-"M102","England","Argentina","","","",""
+"M102","M099","M100","","","",""
 "M103","Loser M101","Loser M102","","","",""
 "M104","Winner M101","Winner M102","","","",""
 
