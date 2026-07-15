@@ -1,8 +1,7 @@
 "match_id","team1","team2","score1","score2","penalty1","penalty2"
-"M101","France","Spain","0","2","",""
-"M102","England","Argentina","","","",""
-"M103","France","Loser M102","","","",""
-"M104","Spain","Winner M102","","","",""
+
+"M103","France","England","","","",""
+"M104","Spain","Argentina","","","",""
 
 "M001","Mexico","South Africa","2","0","",""
 "M002","South Korea","Czech","2","1","",""
@@ -104,3 +103,5 @@
 "M098","Spain","Belgium","2","1","",""
 "M099","Norway","England","1","2","",""
 "M100","Argentina","Colombia","3","1","",""
+"M101","France","Spain","0","2","",""
+"M102","England","Argentina","1","2","",""
